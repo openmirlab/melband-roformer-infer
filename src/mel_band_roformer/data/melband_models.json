@@ -1,0 +1,538 @@
+{
+  "models": {
+    "melband-roformer-big-beta5e": {
+      "name": "MelBand Roformer Big Beta 5e (by unwa)",
+      "checkpoint": "big_beta5e.ckpt",
+      "config": "big_beta5e.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-big-beta6": {
+      "name": "MelBand Roformer Big Beta 6 (by unwa)",
+      "checkpoint": "big_beta6.ckpt",
+      "config": "big_beta6.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-denoise-debleed-gabox": {
+      "name": "MelBand Roformer Denoise Debleed (Gabox)",
+      "checkpoint": "denoisedebleed.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "denoise"
+    },
+    "melband-roformer-fullness": {
+      "name": "MelBand Roformer Fullness Vocal Model",
+      "checkpoint": "FullnessVocalModel.ckpt",
+      "config": "config.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-inst-gabox-bv2": {
+      "name": "MelBand Roformer Instrumental Gabox Bv2",
+      "checkpoint": "inst_gaboxBv2.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-inst-gabox-fv3": {
+      "name": "MelBand Roformer Instrumental Gabox Fv3",
+      "checkpoint": "inst_gaboxFv3.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-inst-gabox3": {
+      "name": "MelBand Roformer Instrumental Gabox V3",
+      "checkpoint": "inst_gabox3.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-inst-gaboxbv3": {
+      "name": "MelBand Roformer Instrumental Gabox Bv3",
+      "checkpoint": "inst_gaboxBv3.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-inst-gaboxfvx": {
+      "name": "MelBand Roformer Inst Gabox FVX",
+      "checkpoint": "Inst_GaboxFVX.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-inst-gaboxv7": {
+      "name": "MelBand Roformer Inst Gabox V7",
+      "checkpoint": "Inst_GaboxV7.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-instv6": {
+      "name": "MelBand Roformer INSTV6 (Gabox)",
+      "checkpoint": "INSTV6.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-instv6n": {
+      "name": "MelBand Roformer INSTV6N (Gabox)",
+      "checkpoint": "INSTV6N.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-instv7n": {
+      "name": "MelBand Roformer INSTV7N (Gabox)",
+      "checkpoint": "INSTV7N.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-instv8": {
+      "name": "MelBand Roformer Inst FV8 (Gabox)",
+      "checkpoint": "inst_gaboxFv8.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-instv8b": {
+      "name": "MelBand Roformer Inst FV8B (Gabox)",
+      "checkpoint": "inst_gaboxFv8B.ckpt",
+      "config": "inst_gabox.yaml",
+      "category": "instrumental"
+    },
+    "melband-roformer-karaoke-gabox": {
+      "name": "MelBand Roformer Karaoke (Gabox experimental)",
+      "checkpoint": "KaraokeGabox.ckpt",
+      "config": "config_mel_band_roformer_karaoke.yaml",
+      "category": "karaoke"
+    },
+    "melband-roformer-kim-vocals": {
+      "name": "MelBand Roformer Kim | Vocals (Kimberley Jensen)",
+      "checkpoint": "MelBandRoformer.ckpt",
+      "config": "config_vocals_mel_band_roformer.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-kimmel-ft": {
+      "name": "MelBand Roformer Kim FT (by unwa)",
+      "checkpoint": "kimmel_unwa_ft.ckpt",
+      "config": "config_kimmel_unwa_ft.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-kimmel-ft2": {
+      "name": "MelBand Roformer Kim FT2 (by unwa)",
+      "checkpoint": "kimmel_unwa_ft2.ckpt",
+      "config": "config_kimmel_unwa_ft.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-kimmel-ft2-bleedless": {
+      "name": "MelBand Roformer Kim FT2 Bleedless (by unwa)",
+      "checkpoint": "kimmel_unwa_ft2_bleedless.ckpt",
+      "config": "config_kimmel_unwa_ft.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-voc-fv3": {
+      "name": "MelBand Roformer Vocals Fv3 (Gabox)",
+      "checkpoint": "voc_Fv3.ckpt",
+      "config": "voc_gabox.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-voc-fv4": {
+      "name": "MelBand Roformer Vocals Fv4 (Gabox)",
+      "checkpoint": "voc_fv4.ckpt",
+      "config": "voc_gabox.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-voc-gabox-fv1": {
+      "name": "MelBand Roformer Vocals Gabox Fv1",
+      "checkpoint": "voc_gaboxFv1.ckpt",
+      "config": "voc_gabox.yaml",
+      "category": "vocals"
+    },
+    "melband-roformer-voc-gabox-fv2": {
+      "name": "MelBand Roformer Vocals Gabox Fv2",
+      "checkpoint": "voc_gaboxFv2.ckpt",
+      "config": "voc_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-mel-roformer-crowd-aufr33-viperx": {
+      "name": "Roformer Model: Mel-Roformer-Crowd-Aufr33-Viperx",
+      "checkpoint": "mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt",
+      "config": "mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144_config.yaml",
+      "category": "crowd"
+    },
+    "roformer-model-mel-roformer-denoise-aufr33": {
+      "name": "Roformer Model: Mel-Roformer-Denoise-Aufr33",
+      "checkpoint": "denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt",
+      "config": "denoise_mel_band_roformer_aufr33_sdr_27.9959_config.yaml",
+      "category": "denoise"
+    },
+    "roformer-model-mel-roformer-denoise-aufr33-aggr": {
+      "name": "Roformer Model: Mel-Roformer-Denoise-Aufr33-Aggr",
+      "checkpoint": "denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt",
+      "config": "denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768_config.yaml",
+      "category": "denoise"
+    },
+    "roformer-model-mel-roformer-karaoke-aufr33-viperx": {
+      "name": "Roformer Model: Mel-Roformer-Karaoke-Aufr33-Viperx",
+      "checkpoint": "mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956.ckpt",
+      "config": "mel_band_roformer_karaoke_aufr33_viperx_sdr_10.1956_config.yaml",
+      "category": "karaoke"
+    },
+    "roformer-model-melband-roformer-aspiration-by-sucial": {
+      "name": "Roformer Model: MelBand Roformer | Aspiration by Sucial",
+      "checkpoint": "aspiration_mel_band_roformer_sdr_18.9845.ckpt",
+      "config": "config_aspiration_mel_band_roformer.yaml",
+      "category": "aspiration"
+    },
+    "roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial": {
+      "name": "Roformer Model: MelBand Roformer | Aspiration Less Aggressive by Sucial",
+      "checkpoint": "aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt",
+      "config": "config_aspiration_mel_band_roformer.yaml",
+      "category": "aspiration"
+    },
+    "roformer-model-melband-roformer-big-beta-6-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer | Big Beta 6 by unwa",
+      "checkpoint": "melband_roformer_big_beta6.ckpt",
+      "config": "config_melbandroformer_big_beta6.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-big-beta-6x-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer | Big Beta 6X by unwa",
+      "checkpoint": "melband_roformer_big_beta6x.ckpt",
+      "config": "config_melbandroformer_big_beta6x.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-bleed-suppressor-v1-by-unwa-97chris": {
+      "name": "Roformer Model: MelBand Roformer | Bleed Suppressor V1 by unwa-97chris",
+      "checkpoint": "mel_band_roformer_bleed_suppressor_v1.ckpt",
+      "config": "config_mel_band_roformer_bleed_suppressor_v1.yaml",
+      "category": "denoise"
+    },
+    "roformer-model-melband-roformer-de-reverb-by-anvuew": {
+      "name": "Roformer Model: MelBand Roformer | De-Reverb by anvuew",
+      "checkpoint": "dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt",
+      "config": "dereverb_mel_band_roformer_anvuew.yaml",
+      "category": "dereverb"
+    },
+    "roformer-model-melband-roformer-de-reverb-echo-by-sucial": {
+      "name": "Roformer Model: MelBand Roformer | De-Reverb-Echo by Sucial",
+      "checkpoint": "dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt",
+      "config": "config_dereverb-echo_mel_band_roformer.yaml",
+      "category": "dereverb"
+    },
+    "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial": {
+      "name": "Roformer Model: MelBand Roformer | De-Reverb-Echo V2 by Sucial",
+      "checkpoint": "dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt",
+      "config": "config_dereverb-echo_mel_band_roformer_sdr_13.4843_v2.yaml",
+      "category": "dereverb"
+    },
+    "roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew": {
+      "name": "Roformer Model: MelBand Roformer | De-Reverb Less Aggressive by anvuew",
+      "checkpoint": "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt",
+      "config": "dereverb_mel_band_roformer_anvuew.yaml",
+      "category": "dereverb"
+    },
+    "roformer-model-melband-roformer-de-reverb-mono-by-anvuew": {
+      "name": "Roformer Model: MelBand Roformer | De-Reverb Mono by anvuew",
+      "checkpoint": "dereverb_mel_band_roformer_mono_anvuew.ckpt",
+      "config": "dereverb_mel_band_roformer_anvuew.yaml",
+      "category": "dereverb"
+    },
+    "roformer-model-melband-roformer-denoise-debleed-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Denoise-Debleed by Gabox",
+      "checkpoint": "mel_band_roformer_denoise_debleed_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "denoise"
+    },
+    "roformer-model-melband-roformer-instrumental-2-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental 2 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_2_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-3-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental 3 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_3_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-bleedless-v1-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Bleedless V1 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_bleedless_v1_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-bleedless-v2-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Bleedless V2 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_bleedless_v2_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-bleedless-v3-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Bleedless V3 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_bleedless_v3_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-by-becruily": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental by becruily",
+      "checkpoint": "mel_band_roformer_instrumental_becruily.ckpt",
+      "config": "config_mel_band_roformer_instrumental_becruily.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fullness-noisy-v4-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Fullness Noisy V4 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fullness_noise_v4_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fullness-v1-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Fullness V1 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fullness_v1_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fullness-v2-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Fullness V2 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fullness_v2_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fullness-v3-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental Fullness V3 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fullness_v3_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fv7z-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental FV7z by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fv7z_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fv8-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental FV8 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fv8_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instrumental-fvx-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Instrumental FVX by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_fvx_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv5-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV5 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv5_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv5n-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV5N by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv5n_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv6-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV6 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv6_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv6n-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV6N by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv6n_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv7-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV7 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv7_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv7n-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV7N by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv7n_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv8-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV8 by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv8_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-instv8n-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | INSTV8N by Gabox",
+      "checkpoint": "mel_band_roformer_instrumental_instv8n_gabox.ckpt",
+      "config": "config_mel_band_roformer_instrumental_gabox.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-karaoke-by-becruily": {
+      "name": "Roformer Model: MelBand Roformer | Karaoke by becruily",
+      "checkpoint": "mel_band_roformer_karaoke_becruily.ckpt",
+      "config": "config_mel_band_roformer_karaoke_becruily.yaml",
+      "category": "karaoke"
+    },
+    "roformer-model-melband-roformer-karaoke-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Karaoke by Gabox",
+      "checkpoint": "mel_band_roformer_karaoke_gabox.ckpt",
+      "config": "config_mel_band_roformer_karaoke_gabox.yaml",
+      "category": "karaoke"
+    },
+    "roformer-model-melband-roformer-karaoke-v2-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Karaoke V2 by Gabox",
+      "checkpoint": "mel_band_roformer_karaoke_gabox_v2.ckpt",
+      "config": "config_mel_band_roformer_karaoke_gabox.yaml",
+      "category": "karaoke"
+    },
+    "roformer-model-melband-roformer-kim-big-beta-4-ft-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | Big Beta 4 FT by unwa",
+      "checkpoint": "melband_roformer_big_beta4.ckpt",
+      "config": "config_melbandroformer_big_beta4.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-big-beta-5e-ft-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | Big Beta 5e FT by unwa",
+      "checkpoint": "melband_roformer_big_beta5e.ckpt",
+      "config": "config_melband_roformer_big_beta5e.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-big-syhft-v1-by-syh99999": {
+      "name": "Roformer Model: MelBand Roformer Kim | Big SYHFT V1 by SYH99999",
+      "checkpoint": "MelBandRoformerBigSYHFTV1.ckpt",
+      "config": "config_vocals_mel_band_roformer_big_v1_ft.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-ft-2-bleedless-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | FT 2 Bleedless by unwa",
+      "checkpoint": "mel_band_roformer_kim_ft2_bleedless_unwa.ckpt",
+      "config": "config_mel_band_roformer_kim_ft_unwa.yaml",
+      "category": "denoise"
+    },
+    "roformer-model-melband-roformer-kim-ft-2-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | FT 2 by unwa",
+      "checkpoint": "mel_band_roformer_kim_ft2_unwa.ckpt",
+      "config": "config_mel_band_roformer_kim_ft_unwa.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-ft-3-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | FT 3 by unwa",
+      "checkpoint": "mel_band_roformer_kim_ft3_unwa.ckpt",
+      "config": "config_mel_band_roformer_kim_ft_unwa.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-ft-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | FT by unwa",
+      "checkpoint": "mel_band_roformer_kim_ft_unwa.ckpt",
+      "config": "config_mel_band_roformer_kim_ft_unwa.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-inst-v1-e-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | Inst V1 (E) by Unwa",
+      "checkpoint": "melband_roformer_inst_v1e.ckpt",
+      "config": "config_melbandroformer_inst.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-kim-inst-v1-e-plus-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | Inst V1 (E) Plus by Unwa",
+      "checkpoint": "melband_roformer_inst_v1e_plus.ckpt",
+      "config": "config_melbandroformer_inst.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-kim-inst-v1-plus-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | Inst V1 Plus by Unwa",
+      "checkpoint": "melband_roformer_inst_v1_plus.ckpt",
+      "config": "config_melbandroformer_inst.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-kim-syhft-by-syh99999": {
+      "name": "Roformer Model: MelBand Roformer Kim | SYHFT by SYH99999",
+      "checkpoint": "MelBandRoformerSYHFT.ckpt",
+      "config": "config_vocals_mel_band_roformer_ft.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-syhft-v2-5-by-syh99999": {
+      "name": "Roformer Model: MelBand Roformer Kim | SYHFT V2.5 by SYH99999",
+      "checkpoint": "MelBandRoformerSYHFTV2.5.ckpt",
+      "config": "config_vocals_mel_band_roformer_ft.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-syhft-v2-by-syh99999": {
+      "name": "Roformer Model: MelBand Roformer Kim | SYHFT V2 by SYH99999",
+      "checkpoint": "MelBandRoformerSYHFTV2.ckpt",
+      "config": "config_vocals_mel_band_roformer_ft.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-kim-syhft-v3-by-syh99999": {
+      "name": "Roformer Model: MelBand Roformer Kim | SYHFT V3 by SYH99999",
+      "checkpoint": "MelBandRoformerSYHFTV3Epsilon.ckpt",
+      "config": "config_vocals_mel_band_roformer_ft.yaml",
+      "category": "general"
+    },
+    "roformer-model-melband-roformer-vocals-by-becruily": {
+      "name": "Roformer Model: MelBand Roformer | Vocals by becruily",
+      "checkpoint": "mel_band_roformer_vocals_becruily.ckpt",
+      "config": "config_mel_band_roformer_vocals_becruily.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-by-kimberley-jensen": {
+      "name": "Roformer Model: MelBand Roformer | Vocals by Kimberley Jensen",
+      "checkpoint": "vocals_mel_band_roformer.ckpt",
+      "config": "vocals_mel_band_roformer.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fullness-by-aname": {
+      "name": "Roformer Model: MelBand Roformer | Vocals Fullness by Aname",
+      "checkpoint": "mel_band_roformer_vocal_fullness_aname.ckpt",
+      "config": "config_mel_band_roformer_vocal_fullness_aname.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fv1-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals FV1 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_fv1_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fv2-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals FV2 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_fv2_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fv3-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals FV3 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_fv3_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fv4-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals FV4 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_fv4_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fv5-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals FV5 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_fv5_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-fv6-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals FV6 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_fv6_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    },
+    "roformer-model-melband-roformer-vocals-v2-by-gabox": {
+      "name": "Roformer Model: MelBand Roformer | Vocals V2 by Gabox",
+      "checkpoint": "mel_band_roformer_vocals_v2_gabox.ckpt",
+      "config": "config_mel_band_roformer_vocals_gabox.yaml",
+      "category": "vocals"
+    }
+  }
+}
