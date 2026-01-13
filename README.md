@@ -8,6 +8,7 @@ MelBand-RoFormer-Infer provides a clean, lightweight API for running music sourc
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/melband-roformer-infer)](https://pypi.org/project/melband-roformer-infer/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/18GAmZPPqoYFZ6SHkphS12cJG4sUl1Ylf)
 
 ---
 
@@ -19,6 +20,14 @@ MelBand-RoFormer-Infer provides a clean, lightweight API for running music sourc
 - **CLI Tools**: `melband-roformer-infer` and `melband-roformer-download` commands
 - **Python API**: Clean programmatic interface
 - **Model Registry**: Easy model discovery with search and category filtering
+
+---
+
+## Try it in Colab
+
+No installation needed! Try the demo directly in Google Colab:
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/18GAmZPPqoYFZ6SHkphS12cJG4sUl1Ylf)
 
 ---
 
