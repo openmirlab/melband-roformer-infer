@@ -8,8 +8,14 @@ import torch.nn as nn
 def get_model_from_config(model_type, config):
     if model_type == 'mel_band_roformer':
         from . import MelBandRoformer
+        model_config = dict(config.model)
+        # Convert list to tuple for parameters that require tuple type hints
+        if 'multi_stft_resolutions_window_sizes' in model_config:
+            model_config['multi_stft_resolutions_window_sizes'] = tuple(
+                model_config['multi_stft_resolutions_window_sizes']
+            )
         model = MelBandRoformer(
-            **dict(config.model)
+            **model_config
         )
     else:
         print('Unknown model: {}'.format(model_type))
