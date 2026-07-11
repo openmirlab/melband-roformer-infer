@@ -2,6 +2,28 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+Twin-drift backport campaign: bs-roformer-infer was forked from this project and
+later accumulated three real bug fixes that were never ported back. Porting them
+here, adapted to melband's config/naming, plus two trivial pre-existing nits.
+
+- **Fix**: `inference.py` now loads YAML configs through `SafeLoaderWithTuple`
+  instead of plain `yaml.safe_load`. Some community training configs embed
+  `!!python/tuple` tags for `multi_stft_resolutions_window_sizes`, which the plain
+  safe loader rejects outright; the custom loader downgrades the tag to a list,
+  which `utils.get_model_from_config` already converts back to a tuple.
+- **Fix**: `inference.py`'s `run_folder` now reads `target_instrument` via
+  `getattr(config.training, "target_instrument", None)` instead of direct attribute
+  access, so configs that omit the key entirely (rather than setting it to `null`)
+  no longer raise `AttributeError`.
+- **Fix**: `inference.py`'s `run_folder` now guards the instrumental-stem write with
+  `if instruments:`, so a config that resolves to an empty instruments list no
+  longer raises `IndexError` on `instruments[0]`.
+- **Add**: `tests/test_twin_backports.py` -- targeted regression tests for the
+  `inference.py` fixes above (yaml tuple tag parsing, missing target_instrument,
+  empty instruments guard).
+
 ## [0.1.2] - 2026-07-11
 
 Twin-sync campaign: brought this project up to the same standard its twin

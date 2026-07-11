@@ -1,11 +1,11 @@
 """CLI entry point for Mel-Band Roformer inference -- folder-batch separation, chunked overlap-add.
 
-Loads a YAML config with `yaml.safe_load` (never the unsafe loader, since configs may
-come from a downloaded third-party source) and hands it to
-utils.get_model_from_config, which fixes up the list-vs-tuple mismatch that plain
-safe_load introduces for `multi_stft_resolutions_window_sizes`. Falls back to CPU
-with a warning when CUDA is unavailable rather than raising, since inference (unlike
-training) is still usable, just slow.
+Training configs sometimes embed `!!python/tuple` YAML tags; SafeLoaderWithTuple
+downgrades those to plain lists so `yaml.load` never has to execute an arbitrary
+Python-object constructor, and utils.get_model_from_config converts the needed
+params back to tuples afterward. Falls back to CPU with a warning when CUDA is
+unavailable rather than raising, since inference (unlike training) is still usable,
+just slow.
 
 Reads: .utils (demix_track, get_model_from_config), yaml, ml_collections, torch
 """
@@ -27,6 +27,19 @@ from ml_collections import ConfigDict
 from tqdm import tqdm
 
 from .utils import demix_track, get_model_from_config
+
+
+class SafeLoaderWithTuple(yaml.SafeLoader):
+    """YAML loader that treats !!python/tuple as a list (which utils.py converts to tuple)."""
+    pass
+
+
+def _tuple_constructor(loader, node):
+    """Convert !!python/tuple to a list; utils.py will convert to tuple later."""
+    return loader.construct_sequence(node)
+
+
+SafeLoaderWithTuple.add_constructor('tag:yaml.org,2002:python/tuple', _tuple_constructor)
 
 
 def _ensure_wav_inputs(input_folder: Path) -> list[Path]:
@@ -58,7 +71,7 @@ def run_folder(model, args, config, device, verbose: bool = False) -> None:
     print(f"Total tracks found: {total_tracks}")
 
     instruments = config.training.instruments
-    if config.training.target_instrument is not None:
+    if getattr(config.training, "target_instrument", None) is not None:
         instruments = [config.training.target_instrument]
 
     iterable = _format_iterable(all_mixtures_path, verbose)
@@ -94,15 +107,16 @@ def run_folder(model, args, config, device, verbose: bool = False) -> None:
             vocals_path = store_dir / f"{path.stem}_{instr}.wav"
             sf.write(vocals_path, vocals_output, sr, subtype="FLOAT")
 
-        vocals_output = res[instruments[0]].T
-        if original_mono:
-            vocals_output = vocals_output[:, 0]
+        if instruments:
+            vocals_output = res[instruments[0]].T
+            if original_mono:
+                vocals_output = vocals_output[:, 0]
 
-        original_mix, _ = sf.read(path)
-        instrumental = original_mix - vocals_output
+            original_mix, _ = sf.read(path)
+            instrumental = original_mix - vocals_output
 
-        instrumental_path = store_dir / f"{path.stem}_instrumental.wav"
-        sf.write(instrumental_path, instrumental, sr, subtype="FLOAT")
+            instrumental_path = store_dir / f"{path.stem}_instrumental.wav"
+            sf.write(instrumental_path, instrumental, sr, subtype="FLOAT")
 
     time.sleep(1)
     print("Elapsed time: {:.2f} sec".format(time.time() - start_time))
@@ -128,7 +142,7 @@ def proc_folder(args):
     torch.backends.cudnn.benchmark = True
 
     with open(args.config_path) as f:
-        config = ConfigDict(yaml.safe_load(f))
+        config = ConfigDict(yaml.load(f, Loader=SafeLoaderWithTuple))
 
     model = get_model_from_config(args.model_type, config)
     print(f"Using model weights: {args.model_path}")
