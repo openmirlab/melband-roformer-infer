@@ -109,14 +109,22 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 |-------|----------|-------------|
 | **`melband-roformer-kim-vocals`** | vocals | **Recommended** - Original MelBand Roformer by Kimberley Jensen |
 | `melband-roformer-big-beta6` | vocals | Big Beta 6 by unwa |
-| `roformer-model-melband-roformer-vocals-by-gabox` | vocals | Vocals by Gabox |
+| `roformer-model-melband-roformer-vocals-by-becruily` | vocals | Vocals by becruily |
 | `roformer-model-melband-roformer-instrumental-by-gabox` | instrumental | Instrumental by Gabox |
-| `roformer-model-mel-roformer-karaoke-aufr33-viperx` | karaoke | Karaoke by aufr33/viperx |
-| `roformer-model-mel-roformer-denoise-aufr33` | denoise | Denoise by aufr33 |
+| `roformer-model-melband-roformer-karaoke-by-becruily` | karaoke | Karaoke by becruily |
+| `melband-roformer-denoise-debleed-gabox` | denoise | Denoise Debleed by Gabox |
 | `roformer-model-melband-roformer-de-reverb-by-anvuew` | dereverb | De-Reverb by anvuew |
-| ... | ... | See `--list-models` for 70+ models |
+| ... | ... | See `--list-models` for 89 models |
 
 **Categories**: vocals, instrumental, karaoke, denoise, dereverb, crowd, general, aspiration
+
+> **Note on download availability**: this registry is bulk-imported from several
+> third-party contributors' Hugging Face repos, some of which get renamed or taken
+> down without notice (see `CHANGELOG.md` for the 2026-07 audit and the jarredou
+> account deletion). Run `python tools/check_weights_liveness.py` (needs network
+> access) to check which models currently have a live download URL before relying
+> on one in a pipeline; `--model`/`--category` downloads will print a clear error
+> if a URL 404s rather than failing silently.
 
 ---
 
