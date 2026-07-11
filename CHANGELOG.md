@@ -2,6 +2,47 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+Twin-drift backport campaign: bs-roformer-infer was forked from this project and
+later accumulated three real bug fixes that were never ported back. Porting them
+here, adapted to melband's config/naming, plus two trivial pre-existing nits.
+
+- **Fix**: `inference.py` now loads YAML configs through `SafeLoaderWithTuple`
+  instead of plain `yaml.safe_load`. Some community training configs embed
+  `!!python/tuple` tags for `multi_stft_resolutions_window_sizes`, which the plain
+  safe loader rejects outright; the custom loader downgrades the tag to a list,
+  which `utils.get_model_from_config` already converts back to a tuple.
+- **Fix**: `inference.py`'s `run_folder` now reads `target_instrument` via
+  `getattr(config.training, "target_instrument", None)` instead of direct attribute
+  access, so configs that omit the key entirely (rather than setting it to `null`)
+  no longer raise `AttributeError`.
+- **Fix**: `inference.py`'s `run_folder` now guards the instrumental-stem write with
+  `if instruments:`, so a config that resolves to an empty instruments list no
+  longer raises `IndexError` on `instruments[0]`.
+- **Fix**: `utils.get_model_from_config` now filters the config's `model` section
+  through a `valid_params` allowlist before constructing `MelBandRoformer`, so an
+  unknown/future config key is dropped instead of raising `TypeError`.
+- **Fix**: `utils.demix_track` now falls back from `config.inference.chunk_size` to
+  `config.audio.chunk_size` (and finally a hardcoded default) instead of assuming
+  `chunk_size` always lives under `inference`, matching older config schema
+  variants.
+- **Fix**: `attend.py`'s `Attend` gained an optional `scale` constructor override
+  (defaults to `None`, preserving the existing `head_dim ** -0.5` default) plus
+  `print_once` diagnostics on GPU backend selection, for parity with the twin.
+- **Fix**: `download.py`'s CLI `--help` epilog referenced the nonexistent
+  `mel-band-roformer-download` command; corrected to the actual console script name,
+  `melband-roformer-download` (see `pyproject.toml`'s `[project.scripts]`).
+- **Cleanup**: removed 5 orphaned entries from `download.py`'s
+  `STATIC_CHECKPOINT_OVERRIDES` -- checkpoint filenames that don't match any
+  registry entry in `data/melband_models.json`, so the override could never be
+  reached by `get()`/`search()`. The one entry that is reachable
+  (`MelBandRoformer.ckpt`, the `DEFAULT_MODEL`'s checkpoint) was kept.
+- **Add**: `tests/test_twin_backports.py` -- targeted regression tests for the
+  `inference.py`/`utils.py`/`attend.py` fixes above (yaml tuple tag parsing,
+  missing target_instrument, empty instruments guard, valid-params filtering,
+  chunk_size fallback, `Attend` scale override).
+
 ## [0.1.2] - 2026-07-11
 
 Twin-sync campaign: brought this project up to the same standard its twin

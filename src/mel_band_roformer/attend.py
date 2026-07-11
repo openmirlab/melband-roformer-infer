@@ -4,7 +4,9 @@ Adapted from lucidrains-style attention wrappers: picks PyTorch's SDPA backend b
 on GPU compute capability at construction time (A100 gets flash-only; other CUDA
 devices get math/mem-efficient) rather than letting PyTorch guess per call, and falls
 back to a plain einsum attention path when `flash=False` so behavior matches the
-non-flash checkpoints this package loads. Requires PyTorch >= 2.0 when flash is enabled.
+non-flash checkpoints this package loads. The optional `scale` constructor arg lets a
+caller override the default `head_dim ** -0.5` softmax scale (defaults to None, which
+preserves existing behavior). Requires PyTorch >= 2.0 when flash is enabled.
 
 Reads: torch (nn, scaled_dot_product_attention), packaging.version, einops
 """
@@ -28,6 +30,9 @@ FlashAttentionConfig = namedtuple('FlashAttentionConfig', ['enable_flash', 'enab
 def exists(val):
     return val is not None
 
+def default(v, d):
+    return v if exists(v) else d
+
 def once(fn):
     called = False
     @wraps(fn)
@@ -47,9 +52,11 @@ class Attend(nn.Module):
     def __init__(
         self,
         dropout = 0.,
-        flash = False
+        flash = False,
+        scale = None
     ):
         super().__init__()
+        self.scale = scale
         self.dropout = dropout
         self.attn_dropout = nn.Dropout(dropout)
 
@@ -67,12 +74,18 @@ class Attend(nn.Module):
         device_properties = torch.cuda.get_device_properties(torch.device('cuda'))
 
         if device_properties.major == 8 and device_properties.minor == 0:
+            print_once('A100 GPU detected, using flash attention if input tensor is on cuda')
             self.cuda_config = FlashAttentionConfig(True, False, False)
         else:
+            print_once('Non-A100 GPU detected, using math or mem efficient attention if input tensor is on cuda')
             self.cuda_config = FlashAttentionConfig(False, True, True)
 
     def flash_attn(self, q, k, v):
         _, heads, q_len, _, k_len, is_cuda, device = *q.shape, k.shape[-2], q.is_cuda, q.device
+
+        if exists(self.scale):
+            default_scale = q.shape[-1] ** -0.5
+            q = q * (self.scale / default_scale)
 
         # Check if there is a compatible device for flash attention
 
@@ -99,7 +112,7 @@ class Attend(nn.Module):
 
         q_len, k_len, device = q.shape[-2], k.shape[-2], q.device
 
-        scale = q.shape[-1] ** -0.5
+        scale = default(self.scale, q.shape[-1] ** -0.5)
 
         if self.flash:
             return self.flash_attn(q, k, v)
