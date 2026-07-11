@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in this file.
 
-## [Unreleased]
+## [0.1.3] - 2026-07-11
 
 Twin-drift backport campaign: bs-roformer-infer was forked from this project and
 later accumulated three real bug fixes that were never ported back. Porting them
