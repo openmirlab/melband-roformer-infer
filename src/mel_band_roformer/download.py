@@ -38,11 +38,6 @@ DEFAULT_CONFIG_BASE_URL = "https://raw.githubusercontent.com/TRvlvr/application_
 
 STATIC_CHECKPOINT_OVERRIDES = {
     "MelBandRoformer.ckpt": "https://huggingface.co/KimberleyJSN/melbandroformer/resolve/main/MelBandRoformer.ckpt",
-    "melband_roformer_inst_v1.ckpt": "https://huggingface.co/pcunwa/Mel-Band-Roformer-Inst/resolve/main/melband_roformer_inst_v1.ckpt",
-    "melband_roformer_inst_v2.ckpt": "https://huggingface.co/pcunwa/Mel-Band-Roformer-Inst/resolve/main/melband_roformer_inst_v2.ckpt",
-    "melband_roformer_instvoc_duality_v1.ckpt": "https://huggingface.co/pcunwa/Mel-Band-Roformer-InstVoc-Duality/resolve/main/melband_roformer_instvoc_duality_v1.ckpt",
-    "melband_roformer_instvox_duality_v2.ckpt": "https://huggingface.co/pcunwa/Mel-Band-Roformer-InstVoc-Duality/resolve/main/melband_roformer_instvox_duality_v2.ckpt",
-    "inst_v1e.ckpt": "https://huggingface.co/pcunwa/Mel-Band-Roformer-Inst/resolve/main/inst_v1e.ckpt",
 }
 
 
@@ -280,10 +275,10 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  mel-band-roformer-download --list-models
-  mel-band-roformer-download --model melband-roformer-kim-vocals
-  mel-band-roformer-download --category karaoke --output-dir ./models
-  mel-band-roformer-download --all --models-only
+  melband-roformer-download --list-models
+  melband-roformer-download --model melband-roformer-kim-vocals
+  melband-roformer-download --category karaoke --output-dir ./models
+  melband-roformer-download --all --models-only
         """
     )
     parser.add_argument(

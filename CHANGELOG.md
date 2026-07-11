@@ -30,6 +30,14 @@ here, adapted to melband's config/naming, plus two trivial pre-existing nits.
 - **Fix**: `attend.py`'s `Attend` gained an optional `scale` constructor override
   (defaults to `None`, preserving the existing `head_dim ** -0.5` default) plus
   `print_once` diagnostics on GPU backend selection, for parity with the twin.
+- **Fix**: `download.py`'s CLI `--help` epilog referenced the nonexistent
+  `mel-band-roformer-download` command; corrected to the actual console script name,
+  `melband-roformer-download` (see `pyproject.toml`'s `[project.scripts]`).
+- **Cleanup**: removed 5 orphaned entries from `download.py`'s
+  `STATIC_CHECKPOINT_OVERRIDES` -- checkpoint filenames that don't match any
+  registry entry in `data/melband_models.json`, so the override could never be
+  reached by `get()`/`search()`. The one entry that is reachable
+  (`MelBandRoformer.ckpt`, the `DEFAULT_MODEL`'s checkpoint) was kept.
 - **Add**: `tests/test_twin_backports.py` -- targeted regression tests for the
   `inference.py`/`utils.py`/`attend.py` fixes above (yaml tuple tag parsing,
   missing target_instrument, empty instruments guard, valid-params filtering,
