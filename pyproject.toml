@@ -45,6 +45,7 @@ dependencies = [
     "librosa>=0.9",
     "PyYAML>=6.0",
     "requests>=2.31",
+    "packaging>=14.1",
 ]
 
 [project.optional-dependencies]
