@@ -121,10 +121,13 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 > **Note on download availability**: this registry is bulk-imported from several
 > third-party contributors' Hugging Face repos, some of which get renamed or taken
 > down without notice (see `CHANGELOG.md` for the 2026-07 audit and the jarredou
-> account deletion). Run `python tools/check_weights_liveness.py` (needs network
-> access) to check which models currently have a live download URL before relying
-> on one in a pipeline; `--model`/`--category` downloads will print a clear error
-> if a URL 404s rather than failing silently.
+> account deletion). That audit repointed 43 dead entries to a live mirror, but
+> ~10 of the 89 registry models are still fully dead (both checkpoint and config
+> unreachable) and could not be matched to a live source yet -- see `CHANGELOG.md`
+> for the full breakdown. Run `python tools/check_weights_liveness.py` (needs
+> network access) to check which models currently have a live download URL before
+> relying on one in a pipeline; `--model`/`--category` downloads will print a clear
+> error if a URL 404s rather than failing silently.
 
 ---
 
