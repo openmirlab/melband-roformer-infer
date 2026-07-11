@@ -1,4 +1,14 @@
-"""CLI entry point for Mel-Band Roformer inference."""
+"""CLI entry point for Mel-Band Roformer inference -- folder-batch separation, chunked overlap-add.
+
+Loads a YAML config with `yaml.safe_load` (never the unsafe loader, since configs may
+come from a downloaded third-party source) and hands it to
+utils.get_model_from_config, which fixes up the list-vs-tuple mismatch that plain
+safe_load introduces for `multi_stft_resolutions_window_sizes`. Falls back to CPU
+with a warning when CUDA is unavailable rather than raising, since inference (unlike
+training) is still usable, just slow.
+
+Reads: .utils (demix_track, get_model_from_config), yaml, ml_collections, torch
+"""
 
 from __future__ import annotations
 

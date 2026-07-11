@@ -1,9 +1,16 @@
-"""Model registry for Mel-Band Roformer checkpoints.
+"""Model registry -- checkpoint/config/category metadata for every Mel-Band Roformer variant.
 
-The registry is built from python-audio-separator's `models.json` "roformer" list so we
-share the same naming and config filenames. Each entry exposes a slug, friendly name,
-checkpoint filename and config filename plus a coarse category (vocals, instrumental,
-karaoke, denoise, etc.).
+Backed by data/melband_models.json rather than hardcoded Python so new models can be
+added without a code change. Built from python-audio-separator's `models.json`
+"roformer" list, so it shares the same checkpoint/config filenames -- but not
+necessarily a live download URL for each; see download.py and CHANGELOG.md for the
+2026-07 audit that found most of the ~68 bulk-imported entries had never been wired
+to a real URL. `get()` accepts a slug, friendly name, or checkpoint filename
+interchangeably, since callers (the download CLI, this package's `__init__`) rarely
+agree on which key they have handy. `MelBandModel.default_sources` maps category ->
+expected output stems, since the raw JSON doesn't declare that itself.
+
+Reads: data/melband_models.json
 """
 
 from __future__ import annotations
