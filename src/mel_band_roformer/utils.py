@@ -1,3 +1,18 @@
+"""Model construction from config + chunked windowed inference (overlap-add demixing).
+
+get_model_from_config filters a raw training-config dict down to the keys
+MelBandRoformer's constructor actually accepts (training configs carry extra fields
+MelBandRoformer doesn't take) and converts the list-typed `multi_stft_resolutions_window_sizes`
+param back to the tuple the type hints require -- yaml.safe_load always produces a
+list, never a tuple. demix_track splits long mixtures into overlapping chunks,
+applies a linear fade-in/out window per chunk to avoid audible seams at chunk
+boundaries, and normalizes the result by the accumulated window weight -- this is
+what lets inference run on audio far longer than a single forward pass could hold in
+memory.
+
+Reads: .mel_band_roformer.MelBandRoformer, torch
+"""
+
 import time
 import numpy as np
 import torch

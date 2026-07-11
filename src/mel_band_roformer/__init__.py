@@ -1,10 +1,10 @@
-"""Mel-Band Roformer inference utilities.
+"""Public package surface -- re-exports the model, registry, and CLI entry points.
 
-The package exposes:
-- :class:`MelBandRoformer` – the neural network architecture
-- :func:`get_model_from_config` – helper to instantiate from YAML config files
-- :func:`demix_track` – overlap-add inference helper used across worzpro demos
-- Console entry points ``melband-roformer-infer`` and ``melband-roformer-download``
+Thin barrel: no logic of its own, just the stable import path (`from mel_band_roformer
+import ...`) that callers, tests, and the `melband-roformer-infer` /
+`melband-roformer-download` console scripts in pyproject.toml depend on.
+
+Reads: .mel_band_roformer, .model_registry, .utils, .inference, .download
 """
 
 from .mel_band_roformer import MelBandRoformer  # noqa: F401
@@ -24,4 +24,4 @@ __all__ = [
     "download_main",
 ]
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"

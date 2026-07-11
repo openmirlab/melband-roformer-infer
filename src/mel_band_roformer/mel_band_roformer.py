@@ -1,3 +1,16 @@
+"""MelBandRoformer -- the Mel-Band RoPE Transformer architecture (mel-band-split + axial attention).
+
+Splits the STFT spectrogram into perceptually-spaced mel-scale frequency bands (via
+librosa's mel filter bank, unlike BS-Roformer's linear band split), runs alternating
+time-axis and frequency-axis Transformer stacks per layer (axial attention, cheaper
+than full 2D attention over the spectrogram), then reconstructs per-stem masks
+(MaskEstimator) applied back onto the complex STFT before ISTFT. Overlapping mel bands
+are averaged back onto their shared frequency bins (`masks_averaged`) since the mel
+filter bank assigns some frequencies to more than one band.
+
+Reads: .attend.Attend, rotary_embedding_torch.RotaryEmbedding, beartype, einops, librosa, torch
+"""
+
 from functools import partial
 
 import torch

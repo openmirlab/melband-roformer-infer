@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
-"""Download script for Mel-Band Roformer checkpoints/configs."""
+"""Download Mel-Band Roformer checkpoints/configs -- CLI + override-aware URL resolution.
+
+Third-party HF accounts can vanish without warning: the jarredou account (deleted,
+confirmed gone during the 2026-07 audit) tainted this registry's karaoke-by-gabox
+override until it was repointed to a Politrees/UVR_resources mirror. data/overrides.json
+is the patch point for exactly this failure mode -- when a URL starts 404ing, edit
+that file first, before touching this module's code. Resolution precedence per asset:
+overrides.json entry > packaged local file under configs/ (configs only, checked by
+_copy_packaged_config) > DEFAULT_CKPT_BASE_URL / DEFAULT_CONFIG_BASE_URL construction
+(the fallback most of the registry's ~68 bulk-imported entries still rely on, and
+many of those default-constructed URLs were never actually live -- see CHANGELOG.md).
+
+Reads: .model_registry (MelBandModel, MODEL_REGISTRY), data/overrides.json, requests, tqdm
+"""
 
 from __future__ import annotations
 
