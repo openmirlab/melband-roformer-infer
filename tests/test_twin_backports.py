@@ -5,7 +5,7 @@ that were never ported back. Each is a defensive addition that only changes beha
 on inputs that previously crashed or mis-parsed -- these tests target exactly those
 previously-crashing inputs.
 
-Reads: mel_band_roformer.inference, mel_band_roformer.utils
+Reads: mel_band_roformer.inference, mel_band_roformer.utils, mel_band_roformer.attend
 """
 
 import argparse
@@ -22,6 +22,7 @@ from ml_collections import ConfigDict
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from mel_band_roformer import inference as inference_module
+from mel_band_roformer.attend import Attend
 from mel_band_roformer.inference import SafeLoaderWithTuple
 from mel_band_roformer.utils import demix_track, get_model_from_config
 
@@ -187,3 +188,27 @@ class TestChunkSizeFallback:
         # (deliberately huge) audio.chunk_size.
         res = self._run(config)
         assert "vocals" in res
+
+
+class TestAttendScale:
+    """Attend's optional scale override should change output only when explicitly set."""
+
+    def _sample_qkv(self):
+        torch.manual_seed(0)
+        q = torch.randn(1, 2, 4, 8)
+        k = torch.randn(1, 2, 4, 8)
+        v = torch.randn(1, 2, 4, 8)
+        return q, k, v
+
+    def test_scale_none_matches_pre_backport_default_behavior(self):
+        q, k, v = self._sample_qkv()
+        out_implicit_default = Attend(flash=False)(q, k, v)
+        out_explicit_none = Attend(flash=False, scale=None)(q, k, v)
+        assert torch.allclose(out_implicit_default, out_explicit_none)
+
+    def test_scale_override_changes_output(self):
+        q, k, v = self._sample_qkv()
+        default_scale = q.shape[-1] ** -0.5
+        out_default = Attend(flash=False)(q, k, v)
+        out_scaled = Attend(flash=False, scale=default_scale * 4)(q, k, v)
+        assert not torch.allclose(out_default, out_scaled)

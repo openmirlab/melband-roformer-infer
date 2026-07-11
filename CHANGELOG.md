@@ -27,10 +27,13 @@ here, adapted to melband's config/naming, plus two trivial pre-existing nits.
   `config.audio.chunk_size` (and finally a hardcoded default) instead of assuming
   `chunk_size` always lives under `inference`, matching older config schema
   variants.
+- **Fix**: `attend.py`'s `Attend` gained an optional `scale` constructor override
+  (defaults to `None`, preserving the existing `head_dim ** -0.5` default) plus
+  `print_once` diagnostics on GPU backend selection, for parity with the twin.
 - **Add**: `tests/test_twin_backports.py` -- targeted regression tests for the
-  `inference.py`/`utils.py` fixes above (yaml tuple tag parsing, missing
-  target_instrument, empty instruments guard, valid-params filtering, chunk_size
-  fallback).
+  `inference.py`/`utils.py`/`attend.py` fixes above (yaml tuple tag parsing,
+  missing target_instrument, empty instruments guard, valid-params filtering,
+  chunk_size fallback, `Attend` scale override).
 
 ## [0.1.2] - 2026-07-11
 
