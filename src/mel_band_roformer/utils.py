@@ -1,14 +1,17 @@
 """Model construction from config + chunked windowed inference (overlap-add demixing).
 
-get_model_from_config filters a raw training-config dict down to the keys
-MelBandRoformer's constructor actually accepts (training configs carry extra fields
-MelBandRoformer doesn't take) and converts the list-typed `multi_stft_resolutions_window_sizes`
-param back to the tuple the type hints require -- yaml.safe_load always produces a
-list, never a tuple. demix_track splits long mixtures into overlapping chunks,
-applies a linear fade-in/out window per chunk to avoid audible seams at chunk
-boundaries, and normalizes the result by the accumulated window weight -- this is
-what lets inference run on audio far longer than a single forward pass could hold in
-memory.
+get_model_from_config filters a raw training-config dict down to `valid_params` --
+the keys MelBandRoformer's constructor actually accepts -- and drops the rest instead
+of letting an unknown key blow up as a TypeError; training configs (and especially
+community-authored ones) carry extra fields MelBandRoformer doesn't take. It also
+converts the list-typed `multi_stft_resolutions_window_sizes` param back to the tuple
+the type hints require -- yaml always produces a list, never a tuple. demix_track
+splits long mixtures into overlapping chunks, applies a linear fade-in/out window per
+chunk to avoid audible seams at chunk boundaries, and normalizes the result by the
+accumulated window weight -- this is what lets inference run on audio far longer than
+a single forward pass could hold in memory. Its chunk_size lookup falls back from the
+`inference` config section to the `audio` section, since some config schema variants
+only declare it there.
 
 Reads: .mel_band_roformer.MelBandRoformer, torch
 """
@@ -24,11 +27,26 @@ def get_model_from_config(model_type, config):
     if model_type == 'mel_band_roformer':
         from . import MelBandRoformer
         model_config = dict(config.model)
+
         # Convert list to tuple for parameters that require tuple type hints
         if 'multi_stft_resolutions_window_sizes' in model_config:
             model_config['multi_stft_resolutions_window_sizes'] = tuple(
                 model_config['multi_stft_resolutions_window_sizes']
             )
+
+        # Filter out parameters not accepted by MelBandRoformer
+        valid_params = {
+            'dim', 'depth', 'stereo', 'num_stems', 'time_transformer_depth',
+            'freq_transformer_depth', 'num_bands', 'dim_head', 'heads',
+            'attn_dropout', 'ff_dropout', 'flash_attn', 'dim_freqs_in',
+            'sample_rate', 'stft_n_fft', 'stft_hop_length', 'stft_win_length',
+            'stft_normalized', 'stft_window_fn', 'mask_estimator_depth',
+            'multi_stft_resolution_loss_weight', 'multi_stft_resolutions_window_sizes',
+            'multi_stft_hop_size', 'multi_stft_normalized', 'multi_stft_window_fn',
+            'match_input_audio_length',
+        }
+        model_config = {k: v for k, v in model_config.items() if k in valid_params}
+
         model = MelBandRoformer(
             **model_config
         )
@@ -48,7 +66,13 @@ def get_windowing_array(window_size, fade_size, device):
     return window.to(device)
 
 def demix_track(config, model, mix, device, first_chunk_time=None):
-    C = config.inference.chunk_size
+    # chunk_size can be in inference or audio section depending on config version
+    if hasattr(config.inference, 'chunk_size'):
+        C = config.inference.chunk_size
+    elif hasattr(config, 'audio') and hasattr(config.audio, 'chunk_size'):
+        C = config.audio.chunk_size
+    else:
+        C = 588800  # default chunk size
     N = config.inference.num_overlap
     step = C // N
     fade_size = C // 10

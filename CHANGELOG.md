@@ -20,9 +20,17 @@ here, adapted to melband's config/naming, plus two trivial pre-existing nits.
 - **Fix**: `inference.py`'s `run_folder` now guards the instrumental-stem write with
   `if instruments:`, so a config that resolves to an empty instruments list no
   longer raises `IndexError` on `instruments[0]`.
+- **Fix**: `utils.get_model_from_config` now filters the config's `model` section
+  through a `valid_params` allowlist before constructing `MelBandRoformer`, so an
+  unknown/future config key is dropped instead of raising `TypeError`.
+- **Fix**: `utils.demix_track` now falls back from `config.inference.chunk_size` to
+  `config.audio.chunk_size` (and finally a hardcoded default) instead of assuming
+  `chunk_size` always lives under `inference`, matching older config schema
+  variants.
 - **Add**: `tests/test_twin_backports.py` -- targeted regression tests for the
-  `inference.py` fixes above (yaml tuple tag parsing, missing target_instrument,
-  empty instruments guard).
+  `inference.py`/`utils.py` fixes above (yaml tuple tag parsing, missing
+  target_instrument, empty instruments guard, valid-params filtering, chunk_size
+  fallback).
 
 ## [0.1.2] - 2026-07-11
 
