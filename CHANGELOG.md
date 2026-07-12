@@ -2,7 +2,55 @@
 
 All notable changes to this project are documented in this file.
 
-## [Unreleased]
+## [0.1.4] - 2026-07-12
+
+Weights-UX campaign (org Weights UX contract, constitution art. 4): real
+integrity verification, true auto-download, and a configurable weights folder.
+Twin change with bs-roformer-infer 0.1.4.
+
+### Added
+- **sha256 verification wired into downloads**: `data/checksums.json` records
+  the known-good sha256 + size for all 71 assets whose download URLs were live
+  in the 2026-07-12 audit (53 checkpoints + 18 configs). Hashes were obtained
+  from Hugging Face LFS pointers (authoritative content-address oids) and
+  cross-verified against independently downloaded local copies for
+  MelBandRoformer.ckpt
+  (`87201f4d31afb5bc79993230fc49446918425574db48c01c405e44f365c7559e`,
+  913,106,900 bytes — two local copies) and big_beta6.ckpt (one local copy).
+  `download_file`/`verify_file_integrity` now check the hash after every
+  download; a mismatch deletes the file and retries instead of keeping a
+  corrupt checkpoint. The previously dead `get_file_hash()` helper is now the
+  actual verification path. Assets without a recorded hash fall back to the
+  old non-empty check and say so.
+- **Auto-download on first use**: `melband-roformer-infer` no longer requires
+  `--model_path`/`--config_path` — when omitted, the registry model selected
+  via the new `--model` flag (default: MelBand Roformer Kim) is resolved from
+  the models directory and downloaded (sha256-verified) if missing, via the
+  new public `ensure_model_assets()` API (also exported from the package
+  root). Explicit paths still win and skip auto-resolution.
+- **Configurable weights folder**: downloads now default to
+  `~/.cache/melband-roformer-infer/` instead of the CWD-relative `./models`.
+  Overridable via the `MELBAND_ROFORMER_MODELS_PATH` env var, the inference
+  CLI's `--models_dir`, the download CLI's `--output-dir`, or the API's
+  `models_dir=` argument. A legacy `./models` directory is still searched as
+  a read fallback so pre-0.1.4 downloads keep working without re-fetching.
+- `tests/test_weights_ux.py`: offline unit tests for the hash-verification
+  wiring (including a fake-response download that must reject a wrong sha256
+  and delete the file), the models-dir resolution order, and a lock that every
+  live HF override checkpoint carries a recorded checksum.
+
+### Changed
+- Version is now single-sourced from `src/mel_band_roformer/__about__.py` via
+  hatch's dynamic version; `pyproject.toml` and `__init__.py` no longer carry
+  duplicate literals.
+- README: weights section rewritten to state the auto-download behavior, the
+  manual download recipe (exact URL + sha256 + target path), and the folder
+  resolution order truthfully. The previous "integrity verification" feature
+  claim described code that never ran; it is now accurate. Availability note
+  refreshed with the 2026-07-12 re-audit numbers: 37 of 89 models fully
+  usable, 36 checkpoints dead, 10 models fully dead (unchanged from the
+  0.1.2 audit; two HF-hosted overrides, `inst_gaboxFv8.ckpt` and
+  `inst_gaboxFv8B.ckpt`, are also confirmed dead).
 
 ### Removed
 - Google Colab quickstart notebook (`notebooks/quickstart_colab.ipynb`) and
