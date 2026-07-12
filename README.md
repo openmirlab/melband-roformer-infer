@@ -11,6 +11,60 @@ MelBand-RoFormer-Infer provides a clean, lightweight API for running music sourc
 
 ---
 
+## Why This Exists
+
+Mel-Band RoFormer is a strong architecture for music source separation,
+introduced by Lu, Wang, Kong, and Hung (2023) alongside their Band-Split
+RoPE Transformer (BS-RoFormer) work. The reference implementation,
+[lucidrains/BS-RoFormer](https://github.com/lucidrains/BS-RoFormer), provides
+the model architecture only -- no checkpoint management, no CLI, no packaging
+for downstream use. Trained checkpoints -- including the widely-used vocal
+separation model trained by Kimberley Jensen -- are typically distributed
+through [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator)
+(which pulls in the full Ultimate Vocal Remover GUI stack) or through
+individual community members' personal Hugging Face accounts -- hosts that
+can and do vanish or get renamed without warning (see the jarredou account
+deletion and the broader 2026-07 registry audit in `CHANGELOG.md`: 37 of the
+89 bulk-imported registry entries are currently fully usable, 36 checkpoints
+are dead, and 10 models are fully dead).
+
+MelBand-RoFormer-Infer reprovides the architecture as a clean,
+pip-installable, inference-only package: no training code, no GUI
+dependency, a versioned model registry that can be repointed at a new host
+by editing one JSON file (no code change), and sha256-verified auto-download
+so a corrupted or tampered checkpoint is never silently loaded.
+
+---
+
+## Acknowledgments
+
+This project builds upon the excellent work of several open-source projects:
+
+- **[Mel-Band-Roformer-Vocal-Model](https://huggingface.co/KimberleyJSN/melbandroformer)** by Kimberley Jensen -- original model training and the recommended default vocal-separation checkpoint
+- **[BS-RoFormer](https://github.com/lucidrains/BS-RoFormer)** by Phil Wang (lucidrains) -- PyTorch implementation of the Mel-Band / Band-Split RoPE Transformer architecture
+- **[python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator)** by Andrew Beveridge (nomadkaraoke) -- the `models.json` registry this package's model list was bulk-imported from, plus pre-trained checkpoints and configurations for many registry entries
+- **Original Research** -- Wei-Tsung Lu, Ju-Chiang Wang, Qiuqiang Kong, and Yun-Ning Hung for the Band-Split RoPE Transformer paper (see Citation below)
+
+## Citation
+
+If you use MelBand-RoFormer-Infer in your research, please cite the original paper:
+
+```bibtex
+@inproceedings{lu2024music,
+    title     = {Music Source Separation with Band-Split RoPE Transformer},
+    author    = {Lu, Wei-Tsung and Wang, Ju-Chiang and Kong, Qiuqiang and Hung, Yun-Ning},
+    booktitle = {ICASSP 2024 - 2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+    pages     = {481--485},
+    year      = {2024},
+    publisher = {IEEE},
+    doi       = {10.1109/ICASSP48485.2024.10446843}
+}
+```
+
+Also available as a preprint: [arXiv:2309.02612](https://arxiv.org/abs/2309.02612).
+
+---
+
 ## Features
 
 - **Inference Only**: Lightweight package focused on production inference
@@ -19,11 +73,23 @@ MelBand-RoFormer-Infer provides a clean, lightweight API for running music sourc
 - **CLI Tools**: `melband-roformer-infer` and `melband-roformer-download` commands
 - **Python API**: Clean programmatic interface
 
+## Scope
+
+**In scope**: inference (forward pass) with the Mel-Band RoFormer
+architecture; an 89-model registry (`src/mel_band_roformer/data/melband_models.json`)
+spanning vocals, instrumental, karaoke, denoise, dereverb, crowd, general,
+and aspiration checkpoints; automatic, manual, and configurable-directory
+checkpoint management with sha256 verification; a standalone download CLI.
+
+**Out of scope, forever**:
+- Training or fine-tuning code -- this package only ever runs a forward pass.
+- The Ultimate Vocal Remover GUI itself, or any GUI.
+- Bundling or committing checkpoint bytes to this repository's git history
+  (see [What This Project Will NEVER Bundle](#what-this-project-will-never-bundle)).
+
 ---
 
-## Quick Start
-
-### Installation
+## Install
 
 ```bash
 # Using pip
@@ -33,7 +99,7 @@ pip install melband-roformer-infer
 uv pip install melband-roformer-infer
 ```
 
-### CLI Inference
+## Quick Start
 
 ```bash
 # First run auto-downloads the recommended MelBand Roformer Kim model (~913 MB,
@@ -43,7 +109,9 @@ melband-roformer-infer --input_folder ./songs --store_dir ./outputs
 
 Every WAV inside `input_folder` produces `*_vocals.wav` and `*_instrumental.wav` stems. Explicit `--config_path`/`--model_path` arguments still work and skip auto-resolution entirely; `--model <slug>` picks a different registry model to auto-resolve.
 
-### Python API
+---
+
+## Python API
 
 ```python
 from ml_collections import ConfigDict
@@ -59,9 +127,72 @@ model = get_model_from_config("mel_band_roformer", config)
 model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
 ```
 
+## Recommended Model
+
+**MelBand Roformer Kim** (`melband-roformer-kim-vocals`) by Kimberley Jensen is the recommended default model for vocal separation. It provides excellent quality and is the foundation for many fine-tuned variants.
+
+```python
+from mel_band_roformer import DEFAULT_MODEL
+print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
+```
+
+## Available Models
+
+| Model | Category | Description |
+|-------|----------|-------------|
+| **`melband-roformer-kim-vocals`** | vocals | **Recommended** - Original MelBand Roformer by Kimberley Jensen |
+| `melband-roformer-big-beta6` | vocals | Big Beta 6 by unwa |
+| `roformer-model-melband-roformer-vocals-by-becruily` | vocals | Vocals by becruily |
+| `roformer-model-melband-roformer-instrumental-by-gabox` | instrumental | Instrumental by Gabox |
+| `roformer-model-melband-roformer-karaoke-by-becruily` | karaoke | Karaoke by becruily |
+| `melband-roformer-denoise-debleed-gabox` | denoise | Denoise Debleed by Gabox |
+| `roformer-model-melband-roformer-de-reverb-by-anvuew` | dereverb | De-Reverb by anvuew |
+| ... | ... | See `--list-models` for 89 models |
+
+**Categories**: vocals, instrumental, karaoke, denoise, dereverb, crowd, general, aspiration
+
+> **Note on download availability** (re-audited 2026-07-12): this registry is
+> bulk-imported from several third-party contributors' Hugging Face repos, some
+> of which get renamed or taken down without notice (see `CHANGELOG.md` for the
+> 2026-07 audit and the jarredou account deletion). As of the latest audit,
+> **37 of the 89 registry models are fully usable** (checkpoint and config both
+> live -- all of these carry recorded sha256 checksums); 36 checkpoints are
+> dead, and 10 models are fully dead (both checkpoint and config unreachable).
+> Run `python tools/check_weights_liveness.py` (needs network access) to
+> re-check which models currently have a live download URL before relying on
+> one in a pipeline; `--model`/`--category` downloads will print a clear error
+> if a URL 404s rather than failing silently.
+
+## Registry Helpers
+
+```python
+from mel_band_roformer import MODEL_REGISTRY
+
+# List all categories
+print(MODEL_REGISTRY.categories())
+
+# List models by category
+for model in MODEL_REGISTRY.list("vocals"):
+    print(model.name, model.checkpoint)
+
+# Search models
+results = MODEL_REGISTRY.search("karaoke")
+for m in results:
+    print(m.slug)
+
+# Pretty-print all models
+print(MODEL_REGISTRY.as_table())
+```
+
 ---
 
-## Model Weights
+## What This Project Will NEVER Bundle
+
+Model weights are **never bundled or committed to this repository**. Every
+checkpoint is downloaded at runtime from its registry-recorded source,
+sha256-verified against `src/mel_band_roformer/data/checksums.json`, and
+cached locally -- a mismatch deletes the file and retries instead of
+silently keeping a corrupt checkpoint.
 
 ### Where weights live
 
@@ -116,70 +247,7 @@ melband-roformer-download --category karaoke --output-dir ./models
 
 ---
 
-## Recommended Model
-
-**MelBand Roformer Kim** (`melband-roformer-kim-vocals`) by Kimberley Jensen is the recommended default model for vocal separation. It provides excellent quality and is the foundation for many fine-tuned variants.
-
-```python
-from mel_band_roformer import DEFAULT_MODEL
-print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
-```
-
----
-
-## Available Models
-
-| Model | Category | Description |
-|-------|----------|-------------|
-| **`melband-roformer-kim-vocals`** | vocals | **Recommended** - Original MelBand Roformer by Kimberley Jensen |
-| `melband-roformer-big-beta6` | vocals | Big Beta 6 by unwa |
-| `roformer-model-melband-roformer-vocals-by-becruily` | vocals | Vocals by becruily |
-| `roformer-model-melband-roformer-instrumental-by-gabox` | instrumental | Instrumental by Gabox |
-| `roformer-model-melband-roformer-karaoke-by-becruily` | karaoke | Karaoke by becruily |
-| `melband-roformer-denoise-debleed-gabox` | denoise | Denoise Debleed by Gabox |
-| `roformer-model-melband-roformer-de-reverb-by-anvuew` | dereverb | De-Reverb by anvuew |
-| ... | ... | See `--list-models` for 89 models |
-
-**Categories**: vocals, instrumental, karaoke, denoise, dereverb, crowd, general, aspiration
-
-> **Note on download availability** (re-audited 2026-07-12): this registry is
-> bulk-imported from several third-party contributors' Hugging Face repos, some
-> of which get renamed or taken down without notice (see `CHANGELOG.md` for the
-> 2026-07 audit and the jarredou account deletion). As of the latest audit,
-> **37 of the 89 registry models are fully usable** (checkpoint and config both
-> live -- all of these carry recorded sha256 checksums); 36 checkpoints are
-> dead, and 10 models are fully dead (both checkpoint and config unreachable).
-> Run `python tools/check_weights_liveness.py` (needs network access) to
-> re-check which models currently have a live download URL before relying on
-> one in a pipeline; `--model`/`--category` downloads will print a clear error
-> if a URL 404s rather than failing silently.
-
----
-
-## Registry Helpers
-
-```python
-from mel_band_roformer import MODEL_REGISTRY
-
-# List all categories
-print(MODEL_REGISTRY.categories())
-
-# List models by category
-for model in MODEL_REGISTRY.list("vocals"):
-    print(model.name, model.checkpoint)
-
-# Search models
-results = MODEL_REGISTRY.search("karaoke")
-for m in results:
-    print(m.slug)
-
-# Pretty-print all models
-print(MODEL_REGISTRY.as_table())
-```
-
----
-
-## Development Installation
+## Development
 
 ```bash
 # Clone repository
@@ -187,22 +255,16 @@ git clone https://github.com/openmirlab/melband-roformer-infer.git
 cd melband-roformer-infer
 
 # Install with UV
-uv sync
+uv sync --extra dev
 
 # Install with pip
 pip install -e ".[dev]"
 ```
 
----
-
-## Acknowledgments
-
-This project builds upon the excellent work of several open-source projects:
-
-- **[Mel-Band-Roformer-Vocal-Model](https://huggingface.co/KimberleyJSN/melbandroformer)** by Kimberley Jensen - Original model and training
-- **[BS-RoFormer](https://github.com/lucidrains/BS-RoFormer)** by Phil Wang (lucidrains) - PyTorch implementation of the RoFormer architecture
-- **[python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator)** by Andrew Beveridge (nomadkaraoke) - Pre-trained checkpoints and model configurations
-- **Original Research** - Wei-Tsung Lu, Ju-Chiang Wang, Qiuqiang Kong, and Yun-Ning Hung for the Band-Split RoPE Transformer paper
+```bash
+uv run pytest -q       # unit tests (network-marked tests deselected by default)
+uv run ruff check .    # lint
+```
 
 ---
 
@@ -214,21 +276,6 @@ This project includes code and configurations adapted from:
 - **BS-RoFormer** (MIT) - Phil Wang
 - **python-audio-separator** (MIT) - Andrew Beveridge
 - **Mel-Band-Roformer-Vocal-Model** - Kimberley Jensen
-
----
-
-## Citation
-
-If you use MelBand-RoFormer-Infer in your research, please cite the original paper:
-
-```bibtex
-@inproceedings{Lu2023MusicSS,
-    title   = {Music Source Separation with Band-Split RoPE Transformer},
-    author  = {Wei-Tsung Lu and Ju-Chiang Wang and Qiuqiang Kong and Yun-Ning Hung},
-    year    = {2023},
-    url     = {https://api.semanticscholar.org/CorpusID:261556702}
-}
-```
 
 ---
 
