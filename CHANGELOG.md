@@ -38,6 +38,17 @@ Twin change with bs-roformer-infer 0.1.4.
   wiring (including a fake-response download that must reject a wrong sha256
   and delete the file), the models-dir resolution order, and a lock that every
   live HF override checkpoint carries a recorded checksum.
+- **`.github/workflows/test.yml`**: push/PR-triggered CI, closing a gap found
+  in an org-wide audit — the only prior workflow was `publish.yml`, which
+  builds/tests on a single pinned Python (3.10) at release time only, so
+  nothing ran between releases. Matrix covers Python 3.10-3.13 (all four
+  verified locally: 43 passed, 177 deselected — the `network`-marked tests
+  that hit real weight hosts, already excluded by `addopts = "-m 'not
+  network'"`). A `build` job (needs `test`) does the wheel-from-sdist smoke
+  test: `python -m build`, install the wheel into a clean venv, import
+  `mel_band_roformer` and touch `MelBandRoformer`, and confirm the wheel
+  bundles no `.ckpt` weight file (constitution art. 7). Twin change with
+  bs-roformer-infer's test.yml.
 
 ### Changed
 - Version is now single-sourced from `src/mel_band_roformer/__about__.py` via
