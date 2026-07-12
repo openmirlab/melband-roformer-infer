@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.1.5] - 2026-07-12
+
+Hotfix: added explicit `numba>=0.61.0`/`llvmlite>=0.44.0` floors. Without
+them, installing this package alongside another (e.g. bs-roformer-infer)
+in the same environment could make the resolver backtrack numba all the
+way down to a ~2021 release whose llvmlite build-checks the Python version
+inside `setup.py` at exec time rather than via package metadata — pip/uv
+can't skip it, so the build explodes on Python 3.11+. Found by testing a
+real, plain `pip install` of both packages together (not just via the
+project's own lockfile) immediately after the 0.1.4 release.
+
 ## [0.1.4] - 2026-07-12
 
 Weights-UX campaign (org Weights UX contract, constitution art. 4): real

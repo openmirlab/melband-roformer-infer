@@ -43,6 +43,17 @@ dependencies = [
     "rotary-embedding-torch>=0.3.5",
     "einops>=0.6.1",
     "librosa>=0.9",
+    # Explicit floors on librosa's own numba/llvmlite transitive deps: with
+    # no floor here, a resolver installing this package alongside another
+    # (e.g. bs-roformer-infer) can backtrack numba all the way down to a
+    # ~2021 release whose llvmlite build-checks Python version at setup.py
+    # exec time (not via metadata), so pip/uv can't skip it and the build
+    # explodes on Python 3.11+. Verified: bare `pip install
+    # melband-roformer-infer` alone resolves numba fine, but installing it
+    # together with bs-roformer-infer reproduces the backtrack; these
+    # floors close the gap (same fix already applied in sam-audio-kit).
+    "numba>=0.61.0",
+    "llvmlite>=0.44.0",
     "PyYAML>=6.0",
     "requests>=2.31",
     "packaging>=14.1",
