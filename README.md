@@ -14,11 +14,10 @@ MelBand-RoFormer-Infer provides a clean, lightweight API for running music sourc
 ## Features
 
 - **Inference Only**: Lightweight package focused on production inference
-- **Auto-Download**: Automatic checkpoint downloads with integrity verification
-- **70+ Pre-trained Models**: Vocals, instrumentals, karaoke, denoise, dereverb, and more
+- **Auto-Download**: the default model is fetched on first use and sha256-verified against recorded checksums
+- **Model Registry**: 89 catalogued models -- vocals, instrumentals, karaoke, denoise, dereverb, and more (see the availability note below)
 - **CLI Tools**: `melband-roformer-infer` and `melband-roformer-download` commands
 - **Python API**: Clean programmatic interface
-- **Model Registry**: Easy model discovery with search and category filtering
 
 ---
 
@@ -34,51 +33,85 @@ pip install melband-roformer-infer
 uv pip install melband-roformer-infer
 ```
 
-### Download Models
+### CLI Inference
+
+```bash
+# First run auto-downloads the recommended MelBand Roformer Kim model (~913 MB,
+# sha256-verified) into ~/.cache/melband-roformer-infer/ -- no separate download step needed
+melband-roformer-infer --input_folder ./songs --store_dir ./outputs
+```
+
+Every WAV inside `input_folder` produces `*_vocals.wav` and `*_instrumental.wav` stems. Explicit `--config_path`/`--model_path` arguments still work and skip auto-resolution entirely; `--model <slug>` picks a different registry model to auto-resolve.
+
+### Python API
+
+```python
+from ml_collections import ConfigDict
+import torch
+import yaml
+from mel_band_roformer import DEFAULT_MODEL, ensure_model_assets, get_model_from_config
+
+# Resolves local copies, or downloads (sha256-verified) on first use
+ckpt_path, config_path = ensure_model_assets(DEFAULT_MODEL)
+
+config = ConfigDict(yaml.safe_load(open(config_path)))
+model = get_model_from_config("mel_band_roformer", config)
+model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
+```
+
+---
+
+## Model Weights
+
+### Where weights live
+
+Downloads default to `~/.cache/melband-roformer-infer/<model-slug>/`. The
+location is configurable, resolved in this order:
+
+1. Explicit argument: `--models_dir` (inference CLI), `--output-dir` (download CLI), or `ensure_model_assets(..., models_dir=...)` (API)
+2. The `MELBAND_ROFORMER_MODELS_PATH` environment variable
+3. The default `~/.cache/melband-roformer-infer/`
+
+A relative `./models` directory (the pre-0.1.4 default) is still searched as a
+read fallback, so existing downloads keep working without re-fetching.
+
+### Auto-download
+
+When `melband-roformer-infer` runs without `--model_path`/`--config_path`, the
+requested registry model (default: MelBand Roformer Kim) is looked up in the
+directories above and downloaded on first use. Downloads are verified against
+the sha256 checksums recorded in `src/mel_band_roformer/data/checksums.json`
+(71 assets covering every URL that was live in the 2026-07-12 audit); a
+mismatch deletes the file and retries instead of keeping a corrupt checkpoint.
+Assets without a recorded hash (only reachable via unaudited fallback URLs)
+print a warning and fall back to a basic size check.
+
+### Manual download (offline / air-gapped)
+
+The recommended Kim model needs one file (its config ships inside the package):
+
+| File | URL | sha256 |
+|------|-----|--------|
+| `MelBandRoformer.ckpt` (913,106,900 bytes) | <https://huggingface.co/KimberleyJSN/melbandroformer/resolve/main/MelBandRoformer.ckpt> | `87201f4d31afb5bc79993230fc49446918425574db48c01c405e44f365c7559e` |
+
+Place it at
+`~/.cache/melband-roformer-infer/melband-roformer-kim-vocals/MelBandRoformer.ckpt`
+(or the equivalent path under your `MELBAND_ROFORMER_MODELS_PATH`), and
+inference will pick it up without network access. For any other model, the
+download URL is the `overrides.json` entry for its checkpoint (or the TRvlvr
+fallback) and the expected sha256 is in `data/checksums.json`.
+
+### Download CLI (manual path)
 
 ```bash
 # List available models
 melband-roformer-download --list-models
 
-# Download the recommended model (MelBand Roformer Kim)
+# Download the recommended model into the cache dir
 melband-roformer-download --model melband-roformer-kim-vocals
 
-# Download by category
+# Download by category into a custom directory
 melband-roformer-download --category karaoke --output-dir ./models
-
-# Download all models
-melband-roformer-download --all --output-dir ./models
-```
-
-### CLI Inference
-
-```bash
-# Using the recommended MelBand Roformer Kim model
-melband-roformer-infer \
-  --config_path models/melband-roformer-kim-vocals/config_vocals_mel_band_roformer.yaml \
-  --model_path models/melband-roformer-kim-vocals/MelBandRoformer.ckpt \
-  --input_folder ./songs \
-  --store_dir ./outputs
-```
-
-Every WAV inside `input_folder` produces `*_vocals.wav` and `*_instrumental.wav` stems.
-
-### Python API
-
-```python
-from pathlib import Path
-from ml_collections import ConfigDict
-import torch
-import yaml
-from mel_band_roformer import MODEL_REGISTRY, DEFAULT_MODEL, get_model_from_config
-
-# Use the default recommended model (MelBand Roformer Kim)
-entry = MODEL_REGISTRY.get(DEFAULT_MODEL)
-
-# Load config and model
-config = ConfigDict(yaml.safe_load(open(f"models/{entry.slug}/{entry.config}")))
-model = get_model_from_config("mel_band_roformer", config)
-model.load_state_dict(torch.load(f"models/{entry.slug}/{entry.checkpoint}", map_location="cpu"))
 ```
 
 ---
@@ -109,16 +142,17 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 
 **Categories**: vocals, instrumental, karaoke, denoise, dereverb, crowd, general, aspiration
 
-> **Note on download availability**: this registry is bulk-imported from several
-> third-party contributors' Hugging Face repos, some of which get renamed or taken
-> down without notice (see `CHANGELOG.md` for the 2026-07 audit and the jarredou
-> account deletion). That audit repointed 43 dead entries to a live mirror, but
-> ~10 of the 89 registry models are still fully dead (both checkpoint and config
-> unreachable) and could not be matched to a live source yet -- see `CHANGELOG.md`
-> for the full breakdown. Run `python tools/check_weights_liveness.py` (needs
-> network access) to check which models currently have a live download URL before
-> relying on one in a pipeline; `--model`/`--category` downloads will print a clear
-> error if a URL 404s rather than failing silently.
+> **Note on download availability** (re-audited 2026-07-12): this registry is
+> bulk-imported from several third-party contributors' Hugging Face repos, some
+> of which get renamed or taken down without notice (see `CHANGELOG.md` for the
+> 2026-07 audit and the jarredou account deletion). As of the latest audit,
+> **37 of the 89 registry models are fully usable** (checkpoint and config both
+> live -- all of these carry recorded sha256 checksums); 36 checkpoints are
+> dead, and 10 models are fully dead (both checkpoint and config unreachable).
+> Run `python tools/check_weights_liveness.py` (needs network access) to
+> re-check which models currently have a live download URL before relying on
+> one in a pipeline; `--model`/`--category` downloads will print a clear error
+> if a URL 404s rather than failing silently.
 
 ---
 

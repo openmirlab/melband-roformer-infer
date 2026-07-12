@@ -1,0 +1,290 @@
+{
+  "generated": "2026-07-12",
+  "method": "sha256 obtained from Hugging Face LFS pointers (authoritative content-address oids); cross-verified against independently downloaded local copies for MelBandRoformer.ckpt (two copies) and big_beta6.ckpt (one copy). Small non-LFS files hashed from fetched raw bytes. Only assets with a live download URL have entries -- the registry models whose URLs are dead (404, audited 2026-07-12) cannot be hashed until a live mirror is found.",
+  "files": {
+    "FullnessVocalModel.ckpt": {
+      "sha256": "a64a27a672b457de23d9decd1fc7b58b0664a9f4f24bb43af154708e2ef07d2f",
+      "size": 913090472
+    },
+    "INSTV6.ckpt": {
+      "sha256": "677951b8556a27abe32e39705640638826e78101fa901a51ad73d20522be6d25",
+      "size": 913026650
+    },
+    "INSTV6N.ckpt": {
+      "sha256": "802f3e5d183d7c4b50dea147c320e61634f5be6ff55fa899fdebeaf0f3cf7f42",
+      "size": 913026650
+    },
+    "INSTV7N.ckpt": {
+      "sha256": "b0ca36af5d1314be46b56c8a53b6be02f98511fa5d7e3e196fd895755e65be3c",
+      "size": 913026650
+    },
+    "Inst_GaboxFVX.ckpt": {
+      "sha256": "545ef13b0cdbac505818a38db98e09c54e7c03ea17b4e0c895a531bfa352fa59",
+      "size": 913026650
+    },
+    "Inst_GaboxV7.ckpt": {
+      "sha256": "e725a860176acb475d983a1ddd9c1a99a619c69cc9ceda808dd294d10db746a5",
+      "size": 913026650
+    },
+    "KaraokeGabox.ckpt": {
+      "sha256": "296fd8c3b3dc9d8f7d7301405c001829bfafcb86d254af2e2e9095689da242ea",
+      "size": 913090472
+    },
+    "MelBandRoformer.ckpt": {
+      "sha256": "87201f4d31afb5bc79993230fc49446918425574db48c01c405e44f365c7559e",
+      "size": 913106900
+    },
+    "MelBandRoformerBigSYHFTV1.ckpt": {
+      "sha256": "e2327e3e81f19e67c307f8c830c54267c09ecb0e9c6ad2b40a80c310899c955f",
+      "size": 1479738496
+    },
+    "MelBandRoformerSYHFT.ckpt": {
+      "sha256": "f319dfcde4396ea3106658f457f5eb0bc577e113491f61ae8bab216fe84b0c0c",
+      "size": 913096702
+    },
+    "MelBandRoformerSYHFTV2.5.ckpt": {
+      "sha256": "916e3a2c1e63b1457bcad823b98ca705e4933deffd2a5ab3a370e10f68bf47e2",
+      "size": 913090472
+    },
+    "MelBandRoformerSYHFTV2.ckpt": {
+      "sha256": "2e99f8efa5315300c197295592bd7e56c21c1d77e1884c904b5128c54a2a4632",
+      "size": 913095346
+    },
+    "MelBandRoformerSYHFTV3Epsilon.ckpt": {
+      "sha256": "4c886092e4aae13aa089263a0d54d483643f58c16ec221aed37268e2c1031397",
+      "size": 913090472
+    },
+    "aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt": {
+      "sha256": "83bfe991cec4fbadde9f30d1f79cd5293ad0b1f936256be327bba5cbb4883374",
+      "size": 835982664
+    },
+    "aspiration_mel_band_roformer_sdr_18.9845.ckpt": {
+      "sha256": "9e791258c866c6c8da66052693d8cc3b64f1f42c01e052dbdc570cd278380cc5",
+      "size": 835983746
+    },
+    "big_beta5e.ckpt": {
+      "sha256": "32b876e1163716a9a007438b5a5107069586aa9b9ca653a5f63013b1edf6920c",
+      "size": 1479749810
+    },
+    "big_beta5e.yaml": {
+      "sha256": "2e62059b2cca71f6ef6f71a8202e979acc8008593c1fc75035663d1c750a4b7b",
+      "size": 907
+    },
+    "big_beta6.ckpt": {
+      "sha256": "f51cbb94b4ed5c36cb36fd2024236a8af3ed6886567981702ad6f094b2c6c820",
+      "size": 1557078584
+    },
+    "big_beta6.yaml": {
+      "sha256": "14334637d4520bb4934df0815768a32845c9c1c5a1150429d1151e71864d6f24",
+      "size": 1722
+    },
+    "config.yaml": {
+      "sha256": "0353adb4e799f971c6038bac7e5675b9dbf85e103ed1be648b67d04990654172",
+      "size": 927
+    },
+    "config_kimmel_unwa_ft.yaml": {
+      "sha256": "0942cb7da8e86ac1be840cc7b9647831c11ffe00327a0b239df256031e6c8355",
+      "size": 1722
+    },
+    "config_mel_band_roformer_bleed_suppressor_v1.yaml": {
+      "sha256": "bca5755de9946ded7fc37f36c1c9c213ed9f091fe0bc19c6fffaaa2ea7815972",
+      "size": 917
+    },
+    "config_mel_band_roformer_instrumental_becruily.yaml": {
+      "sha256": "a222235643d329817a1123d82d8eb38392d919e90ed597e053de49c092d3b442",
+      "size": 1736
+    },
+    "config_mel_band_roformer_instrumental_gabox.yaml": {
+      "sha256": "723af6755b5624be0a58351a13c930c472b51ef677cf2c7943394fefed7c3d4d",
+      "size": 920
+    },
+    "config_mel_band_roformer_karaoke.yaml": {
+      "sha256": "16b726891076fd0bebab9ce038240b51afb22b04eac6026a7f0356178dcb65b7",
+      "size": 1811
+    },
+    "config_mel_band_roformer_karaoke_becruily.yaml": {
+      "sha256": "cd37b0dcc285fc22d88090415722ac7127ee1d9ea2f3346c3b8d8fcc61e0c74b",
+      "size": 1724
+    },
+    "config_mel_band_roformer_karaoke_gabox.yaml": {
+      "sha256": "16b726891076fd0bebab9ce038240b51afb22b04eac6026a7f0356178dcb65b7",
+      "size": 1811
+    },
+    "config_mel_band_roformer_kim_ft_unwa.yaml": {
+      "sha256": "c910a0b1493fd3f9cee7a576a7498e44e660510dcaaf5d0d50d5363dde1d0010",
+      "size": 1721
+    },
+    "config_mel_band_roformer_vocals_becruily.yaml": {
+      "sha256": "186792a36db251fc5834a883c519b609ca80abbd2bfc4668eea43ee3a4223985",
+      "size": 1723
+    },
+    "config_melband_roformer_big_beta5e.yaml": {
+      "sha256": "cc615390b1a38b80a0115f26c0fc29140cb59ab255fbda1380d9f466bd7d4201",
+      "size": 905
+    },
+    "config_melbandroformer_big_beta4.yaml": {
+      "sha256": "464f21925d2744be6af64cf9ee78d5937d11cfde0b91f819cb1f631acccab603",
+      "size": 908
+    },
+    "config_melbandroformer_big_beta6.yaml": {
+      "sha256": "14334637d4520bb4934df0815768a32845c9c1c5a1150429d1151e71864d6f24",
+      "size": 1722
+    },
+    "config_melbandroformer_big_beta6x.yaml": {
+      "sha256": "42a037e9d80dc1dbc91005047cd20f4afe7c1267163fc878a9fbaf6be21959f3",
+      "size": 1724
+    },
+    "config_melbandroformer_inst.yaml": {
+      "sha256": "723af6755b5624be0a58351a13c930c472b51ef677cf2c7943394fefed7c3d4d",
+      "size": 920
+    },
+    "denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt": {
+      "sha256": "a25e3b233722cd81e2de7b8e798a3fef29d4b9799ccacda60b0dc958a1e2a5bb",
+      "size": 913097300
+    },
+    "denoise_mel_band_roformer_aufr33_sdr_27.9959.ckpt": {
+      "sha256": "7c1c39191edc34e942ca7f2346ce6b6c0e1208a5f76349ffce6f696bd12910de",
+      "size": 913097300
+    },
+    "denoisedebleed.ckpt": {
+      "sha256": "91aa7a546ed2e93482e4629c982d35b0d258bb3de6eeab497fd91658cc86c7fd",
+      "size": 913026650
+    },
+    "dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt": {
+      "sha256": "cd2b737a394cfb80cd48cc9fcbaf89f5f4062f6b93066c2911617a06d8b7860a",
+      "size": 835997896
+    },
+    "dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt": {
+      "sha256": "396432f5af25992fe82d0286634bd879027c073721db6ab10199e75459708b9f",
+      "size": 455862568
+    },
+    "dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt": {
+      "sha256": "9262877b87e9ebb0fb808a456b0a411fa677f5df31c8383c1254af531c078970",
+      "size": 913107578
+    },
+    "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt": {
+      "sha256": "0db8f1b41c00cead1112e967262a12802fd32e76c0c3a8eb207e772bae25d07b",
+      "size": 913107578
+    },
+    "inst_gabox.yaml": {
+      "sha256": "723af6755b5624be0a58351a13c930c472b51ef677cf2c7943394fefed7c3d4d",
+      "size": 920
+    },
+    "inst_gabox3.ckpt": {
+      "sha256": "f9ec9f299cf617bf6afe1c382f4b0761cd9bee78323da94889951812328e10fb",
+      "size": 913026650
+    },
+    "inst_gaboxBv2.ckpt": {
+      "sha256": "6109687febb8f18cd5a45207fee35f18ba8b9467b18a4b2e982a3b7dc04a9d72",
+      "size": 913026650
+    },
+    "inst_gaboxBv3.ckpt": {
+      "sha256": "5578545e094e584835b3184310ed1b12072f15d4b6ed8f4359ecc17358a66676",
+      "size": 913026650
+    },
+    "inst_gaboxFv3.ckpt": {
+      "sha256": "fbb229209a8942d34664e19d2f4862e357ea3108a4e8c04b69aa0aba523a4481",
+      "size": 913026650
+    },
+    "kimmel_unwa_ft.ckpt": {
+      "sha256": "e6bd8d333880191254a6ef6be3cb0ffa4dda9d3282e36b0cce2e88a660e00d39",
+      "size": 913100690
+    },
+    "kimmel_unwa_ft2.ckpt": {
+      "sha256": "5ed7b9e4c2eebbec7a7e5e8113058f7b68ba5e6048db8eaccfbbeb884c7884c0",
+      "size": 913100690
+    },
+    "kimmel_unwa_ft2_bleedless.ckpt": {
+      "sha256": "3c450bd66a98b49dd03231fc5ebb84121eef8418236b179423c2b171d62b04d9",
+      "size": 913101368
+    },
+    "mel_band_roformer_bleed_suppressor_v1.ckpt": {
+      "sha256": "a9a9d10faa7f8997676a78e66d741d7acb9cc449334763f3c8f626d68ec6e575",
+      "size": 913102724
+    },
+    "mel_band_roformer_crowd_aufr33_viperx_sdr_8.7144.ckpt": {
+      "sha256": "ca8799531fe51c94172cc047226209ed48bf7d8c02e04671795a15d2a1c318af",
+      "size": 913096801
+    },
+    "mel_band_roformer_instrumental_becruily.ckpt": {
+      "sha256": "a8da6632a1c25efb1c9be783ce9ea367d226d4b918cd6c3717c8b1d7a396041d",
+      "size": 913106900
+    },
+    "mel_band_roformer_instrumental_gabox.ckpt": {
+      "sha256": "7b3ad6bd8bed3aaaa4d9320ea2ca910d140196a2302186db1754f3a8d8e16fb1",
+      "size": 913026650
+    },
+    "mel_band_roformer_karaoke_becruily.ckpt": {
+      "sha256": "d3aa262ac01df870b9fc033e9c7b6cad33fe04fc9c148b6c40841326a515a0e0",
+      "size": 1719139254
+    },
+    "mel_band_roformer_karaoke_gabox.ckpt": {
+      "sha256": "303fc631e7aa587e9dc1e6ac4bb3667c6ba53aacb6b6a90abcfcf57935b92bd8",
+      "size": 913026650
+    },
+    "mel_band_roformer_kim_ft2_bleedless_unwa.ckpt": {
+      "sha256": "3c450bd66a98b49dd03231fc5ebb84121eef8418236b179423c2b171d62b04d9",
+      "size": 913101368
+    },
+    "mel_band_roformer_kim_ft2_unwa.ckpt": {
+      "sha256": "5ed7b9e4c2eebbec7a7e5e8113058f7b68ba5e6048db8eaccfbbeb884c7884c0",
+      "size": 913100690
+    },
+    "mel_band_roformer_kim_ft_unwa.ckpt": {
+      "sha256": "e6bd8d333880191254a6ef6be3cb0ffa4dda9d3282e36b0cce2e88a660e00d39",
+      "size": 913100690
+    },
+    "mel_band_roformer_vocals_becruily.ckpt": {
+      "sha256": "a05961310cc55fbb901290c2e8be02682942f73522b6ac76bf2ec11e347ed95a",
+      "size": 913107578
+    },
+    "melband_roformer_big_beta4.ckpt": {
+      "sha256": "700a9bd3831d4f7f44cc0019b238774e31045bcbc361fbb69235535c40fc1454",
+      "size": 1574477088
+    },
+    "melband_roformer_big_beta5e.ckpt": {
+      "sha256": "32b876e1163716a9a007438b5a5107069586aa9b9ca653a5f63013b1edf6920c",
+      "size": 1479749810
+    },
+    "melband_roformer_big_beta6.ckpt": {
+      "sha256": "f51cbb94b4ed5c36cb36fd2024236a8af3ed6886567981702ad6f094b2c6c820",
+      "size": 1557078584
+    },
+    "melband_roformer_big_beta6x.ckpt": {
+      "sha256": "e16d702f4e20f13d60b293541c1dea75cb4414a5846b36780e28ef70352a4e5c",
+      "size": 1708527586
+    },
+    "melband_roformer_inst_v1e.ckpt": {
+      "sha256": "df2bcdb8838b88264f5381dbb0ccd84a9926c9775cf548c34d8846f5cd20fe96",
+      "size": 913102724
+    },
+    "melband_roformer_inst_v1e_plus.ckpt": {
+      "sha256": "6a4ddba739f0352407fb6e18b29206b82318ec427fe37fcedb0f83241e4e15fb",
+      "size": 913090472
+    },
+    "voc_Fv3.ckpt": {
+      "sha256": "49d81446b34a7848446efde7898b25bdc32fe872c2393617acb5356649f7ea93",
+      "size": 913026650
+    },
+    "voc_fv4.ckpt": {
+      "sha256": "1a9657de5fd3ed87ad4fd1a9d2069743ecb33424836973ad0f3288e2a64e90bc",
+      "size": 913026650
+    },
+    "voc_gabox.yaml": {
+      "sha256": "32419582fa8c313199ab49be8f5cb2b5e3860769ca045b4788a960d72140cd39",
+      "size": 968
+    },
+    "voc_gaboxFv1.ckpt": {
+      "sha256": "c4dff354d81152d1b4321f6491f242c060919148239fbfe22a1015513de4a7fe",
+      "size": 913026650
+    },
+    "voc_gaboxFv2.ckpt": {
+      "sha256": "2888813aa5b519941fa8548efc5a4331d63c61909007eb17fe95c367be230196",
+      "size": 913026650
+    },
+    "vocals_mel_band_roformer.ckpt": {
+      "sha256": "87201f4d31afb5bc79993230fc49446918425574db48c01c405e44f365c7559e",
+      "size": 913106900
+    }
+  }
+}
