@@ -285,3 +285,18 @@ For issues and questions:
 - **GitHub Issues**: [github.com/openmirlab/melband-roformer-infer/issues](https://github.com/openmirlab/melband-roformer-infer/issues)
 
 ---
+## Explicit lifecycle API
+
+For applications that need controlled model lifetime, use `MelBandRoformerSession`:
+
+```python
+from mel_band_roformer import MelBandRoformerSession
+with MelBandRoformerSession() as session:
+    session.infer("input_folder", store_dir="outputs")
+```
+
+`load()` downloads and verifies weights, `infer()` requires a ready session,
+`release()` frees memory while retaining the disk cache, and `cache_info()`
+reports the selected checkpoint. Existing CLI and downloader entry points remain
+available and lazy. Checkpoint URLs and SHA-256 metadata live in the package-owned
+`config/checkpoints.toml` and can be overridden with explicit paths or metadata.

@@ -86,6 +86,7 @@ include = [
     "src/mel_band_roformer/**/*.py",
     "src/mel_band_roformer/configs/*.yaml",
     "src/mel_band_roformer/data/*.json",
+    "src/mel_band_roformer/config/*.toml",
 ]
 
 [tool.uv]

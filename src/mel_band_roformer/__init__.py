@@ -17,6 +17,7 @@ from .download import (  # noqa: F401
     ensure_model_assets,
     main as download_main,
 )
+from .clean_api import MelBandRoformerSession, MelBandRoformerSeparator, separate_folder
 
 __all__ = [
     "MelBandRoformer",
@@ -30,4 +31,7 @@ __all__ = [
     "ensure_model_assets",
     "default_models_dir",
     "__version__",
+    "MelBandRoformerSession",
+    "MelBandRoformerSeparator",
+    "separate_folder",
 ]

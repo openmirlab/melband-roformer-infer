@@ -168,3 +168,7 @@ bs-roformer-infer reached in its own 0.1.2 release.
 ## [0.1.1] - 2026-01-13
 
 - See git history prior to this file's creation.
+## Unreleased
+
+- Added the additive `MelBandRoformerSession` lifecycle facade and package-owned
+  `config/checkpoints.toml` checkpoint metadata.
