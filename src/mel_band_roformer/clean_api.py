@@ -5,8 +5,8 @@ from ml_collections import ConfigDict
 from .checkpoints import checkpoint_metadata
 
 class MelBandRoformerSession:
-    def __init__(self, *, model_name="melband-roformer-kim-vocals", model=None, model_path=None, config_path=None, models_dir=None, device=None, progress=True, checkpoint_url=None, checkpoint_sha256=None):
-        self.model_name, self._model = model_name, model; self.model_path = Path(model_path) if model_path else None; self.config_path = Path(config_path) if config_path else None; self.models_dir, self.device, self.progress = models_dir, device, progress; self.checkpoint_url, self.checkpoint_sha256 = checkpoint_url, checkpoint_sha256; self._config = None; self._status = "ready" if model is not None else "new"
+    def __init__(self, *, model_name="melband-roformer-kim-vocals", model=None, model_path=None, config_path=None, config=None, models_dir=None, device=None, progress=True, checkpoint_url=None, checkpoint_sha256=None):
+        self.model_name, self._model = model_name, model; self.model_path = Path(model_path) if model_path else None; self.config_path = Path(config_path) if config_path else None; self.models_dir, self.device, self.progress = models_dir, device, progress; self.checkpoint_url, self.checkpoint_sha256 = checkpoint_url, checkpoint_sha256; self._config = config; self._status = "ready" if model is not None else "new"
     @property
     def status(self): return self._status
     def _metadata(self):
