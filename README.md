@@ -292,7 +292,8 @@ For applications that need controlled model lifetime, use `MelBandRoformerSessio
 ```python
 from mel_band_roformer import MelBandRoformerSession
 with MelBandRoformerSession() as session:
-    session.infer("input_folder", store_dir="outputs")
+    manifest = session.infer("input_folder", store_dir="outputs")
+    print(manifest[0]["output_id"], manifest[0]["output_path"])
 ```
 
 `load()` downloads and verifies weights, `infer()` requires a ready session,
@@ -300,3 +301,5 @@ with MelBandRoformerSession() as session:
 reports the selected checkpoint. Existing CLI and downloader entry points remain
 available and lazy. Checkpoint URLs and SHA-256 metadata live in the package-owned
 `config/checkpoints.toml` and can be overridden with explicit paths or metadata.
+The returned manifest is JSON-serializable and records each actual file write with
+`input_path`, `track_id`, `output_id`, and `output_path`.

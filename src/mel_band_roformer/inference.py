@@ -5,6 +5,10 @@ registry model (default: the recommended Kim vocals model) is looked up in the
 models dir ($MELBAND_ROFORMER_MODELS_PATH > ~/.cache/melband-roformer-infer >
 legacy ./models) and downloaded sha256-verified on first use via
 download.ensure_model_assets -- explicit paths always win and skip all of that.
+run_folder() also returns a JSON-serializable manifest of the files it actually
+wrote, so Python callers can consume exact output paths without guessing from
+model defaults or filename conventions; the CLI keeps the same behavior by
+ignoring that return value.
 Training configs sometimes embed `!!python/tuple` YAML tags; SafeLoaderWithTuple
 downgrades those to plain lists so `yaml.load` never has to execute an arbitrary
 Python-object constructor, and utils.get_model_from_config converts the needed
@@ -22,7 +26,7 @@ import argparse
 import sys
 import time
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, TypedDict
 
 import numpy as np
 import soundfile as sf
@@ -68,7 +72,44 @@ def _format_iterable(paths: Iterable[Path], verbose: bool) -> Iterable[Path]:
     return tqdm(paths, desc="Tracks", unit="track") if not verbose else paths
 
 
-def run_folder(model, args, config, device, verbose: bool = False) -> None:
+class OutputManifestEntry(TypedDict):
+    """JSON-serializable record of one file written by run_folder()."""
+
+    input_path: str
+    track_id: str
+    output_id: str
+    output_path: str
+
+
+OutputManifest = list[OutputManifestEntry]
+
+
+def _resolve_output_ids(config: ConfigDict) -> list[str]:
+    instruments = [str(instr) for instr in config.training.instruments]
+    target_instrument = getattr(config.training, "target_instrument", None)
+    if target_instrument is not None:
+        return [str(target_instrument)]
+    return instruments
+
+
+def _record_written_output(
+    manifest: OutputManifest,
+    *,
+    input_path: Path,
+    output_id: str,
+    output_path: Path,
+) -> None:
+    manifest.append(
+        {
+            "input_path": str(input_path),
+            "track_id": input_path.stem,
+            "output_id": output_id,
+            "output_path": str(output_path),
+        }
+    )
+
+
+def run_folder(model, args, config, device, verbose: bool = False) -> OutputManifest:
     start_time = time.time()
     model.eval()
 
@@ -78,11 +119,10 @@ def run_folder(model, args, config, device, verbose: bool = False) -> None:
     total_tracks = len(all_mixtures_path)
     print(f"Total tracks found: {total_tracks}")
 
-    instruments = config.training.instruments
-    if getattr(config.training, "target_instrument", None) is not None:
-        instruments = [config.training.target_instrument]
+    instruments = _resolve_output_ids(config)
 
     iterable = _format_iterable(all_mixtures_path, verbose)
+    manifest: OutputManifest = []
 
     first_chunk_time = None
 
@@ -114,6 +154,12 @@ def run_folder(model, args, config, device, verbose: bool = False) -> None:
 
             vocals_path = store_dir / f"{path.stem}_{instr}.wav"
             sf.write(vocals_path, vocals_output, sr, subtype="FLOAT")
+            _record_written_output(
+                manifest,
+                input_path=path,
+                output_id=instr,
+                output_path=vocals_path,
+            )
 
         if instruments:
             vocals_output = res[instruments[0]].T
@@ -125,9 +171,16 @@ def run_folder(model, args, config, device, verbose: bool = False) -> None:
 
             instrumental_path = store_dir / f"{path.stem}_instrumental.wav"
             sf.write(instrumental_path, instrumental, sr, subtype="FLOAT")
+            _record_written_output(
+                manifest,
+                input_path=path,
+                output_id="instrumental",
+                output_path=instrumental_path,
+            )
 
     time.sleep(1)
     print("Elapsed time: {:.2f} sec".format(time.time() - start_time))
+    return manifest
 
 
 def proc_folder(args):
