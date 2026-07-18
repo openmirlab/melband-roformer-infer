@@ -69,7 +69,7 @@ class MelBandRoformerSession:
         self._status = "loading"
         try:
             from .download import ensure_model_assets, get_file_hash
-            from .inference import SafeLoaderWithTuple
+            from .inference import SafeLoaderWithTuple, _resolve_device
             from .utils import get_model_from_config
 
             if self.model_path is None or self.config_path is None:
@@ -93,9 +93,7 @@ class MelBandRoformerSession:
                 raise ValueError(f"checkpoint SHA-256 mismatch for {self.model_path}")
 
             self._model.load_state_dict(torch.load(self.model_path, map_location="cpu"))
-            target = torch.device(
-                self.device or ("cuda:0" if torch.cuda.is_available() else "cpu")
-            )
+            target = _resolve_device(self.device)
             self._model = self._model.to(target).eval()
             self.device = target
             self._status = "ready"

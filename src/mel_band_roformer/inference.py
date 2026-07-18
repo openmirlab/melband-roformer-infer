@@ -250,17 +250,25 @@ def _resolve_model_assets(args: argparse.Namespace, parser: argparse.ArgumentPar
     )
 
 
-def _select_device(args: argparse.Namespace) -> torch.device:
-    if args.device:
-        if args.device == "cpu":
+def _resolve_device(device: str | None) -> torch.device:
+    """Resolve None, "", or the literal string "auto" to cuda:0-if-available-else-cpu.
+
+    Any other explicit value (e.g. "cpu", "cuda:0") passes through unchanged.
+    """
+    if device and device != "auto":
+        if device == "cpu":
             return torch.device("cpu")
-        return torch.device(args.device)
+        return torch.device(device)
 
     if torch.cuda.is_available():
         return torch.device("cuda:0")
 
     print("CUDA is not available. Falling back to CPU. This will be slow.")
     return torch.device("cpu")
+
+
+def _select_device(args: argparse.Namespace) -> torch.device:
+    return _resolve_device(args.device)
 
 
 def main():
