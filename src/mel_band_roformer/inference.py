@@ -250,21 +250,29 @@ def _resolve_model_assets(args: argparse.Namespace, parser: argparse.ArgumentPar
     )
 
 
-def _resolve_device(device: str | None) -> torch.device:
-    """Resolve None, "", or the literal string "auto" to cuda:0-if-available-else-cpu.
+def _resolve_device(device: str | torch.device | None) -> torch.device:
+    """Resolve legacy auto selection and validate explicit device requests."""
+    if device is None or device == "" or device == "auto":
+        if torch.cuda.is_available():
+            return torch.device("cuda:0")
+        print("CUDA is not available. Falling back to CPU. This will be slow.")
+        return torch.device("cpu")
 
-    Any other explicit value (e.g. "cpu", "cuda:0") passes through unchanged.
-    """
-    if device and device != "auto":
-        if device == "cpu":
-            return torch.device("cpu")
-        return torch.device(device)
-
-    if torch.cuda.is_available():
-        return torch.device("cuda:0")
-
-    print("CUDA is not available. Falling back to CPU. This will be slow.")
-    return torch.device("cpu")
+    resolved = torch.device(device)
+    if resolved.type == "cpu" and resolved.index is None:
+        return resolved
+    if resolved.type == "mps" and resolved.index is None:
+        mps = getattr(torch.backends, "mps", None)
+        if mps is None or not mps.is_available():
+            raise RuntimeError("MPS was explicitly requested but is not available")
+        return resolved
+    if resolved.type != "cuda":
+        raise ValueError("device must be None, 'auto', 'cpu', 'cuda', 'cuda:N', or 'mps'")
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA was explicitly requested but is not available")
+    if resolved.index is not None and resolved.index >= torch.cuda.device_count():
+        raise RuntimeError(f"CUDA device index {resolved.index} is not available")
+    return resolved
 
 
 def _select_device(args: argparse.Namespace) -> torch.device:

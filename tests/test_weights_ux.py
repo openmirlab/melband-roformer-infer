@@ -161,6 +161,10 @@ def test_ensure_model_assets_finds_legacy_models_dir(monkeypatch, tmp_path):
     legacy_dir.mkdir(parents=True)
     (legacy_dir / entry.checkpoint).write_bytes(b"fake checkpoint")
     (legacy_dir / entry.config).write_text("training: {}\n")
+    cache_dir = tmp_path / "modern-cache" / entry.slug
+    cache_dir.mkdir(parents=True)
+    (cache_dir / entry.checkpoint).write_bytes(b"another local checkpoint")
+    monkeypatch.setattr(dl, "default_models_dir", lambda: tmp_path / "modern-cache")
 
     monkeypatch.setattr(dl, "download_file",
                         lambda *a, **k: pytest.fail("network download attempted"))

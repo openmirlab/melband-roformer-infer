@@ -33,11 +33,13 @@ import sys
 import time
 from pathlib import Path
 from typing import Iterable, List, Optional, Sequence, Tuple, Union
+from urllib.parse import urlparse
 
 import requests
 from tqdm import tqdm
 
 from .model_registry import DEFAULT_MODEL, MODEL_REGISTRY, MelBandModel
+from .checkpoints import checkpoint_metadata
 
 PACKAGE_ROOT = Path(__file__).resolve().parent
 DATA_ROOT = PACKAGE_ROOT / "data"
@@ -288,17 +290,70 @@ def _expected_checksum(filename: str) -> Tuple[Optional[str], Optional[int]]:
     return entry.get("sha256"), entry.get("size")
 
 
-def _download_checkpoint(model: MelBandModel, model_dir: Path, force: bool) -> bool:
-    target = model_dir / model.checkpoint
+def _toml_artifact(model: MelBandModel, kind: str) -> Optional[dict]:
+    """Return the package-owned runtime metadata for a declared artifact."""
+    try:
+        artifacts = checkpoint_metadata(model.slug).get("artifacts", [])
+    except KeyError:
+        return None
+    return next((artifact for artifact in artifacts if artifact.get("kind") == kind), None)
+
+
+def _asset_name(model: MelBandModel, kind: str, checkpoint_url: Optional[str] = None) -> str:
+    if kind == "checkpoint" and checkpoint_url:
+        name = Path(urlparse(checkpoint_url).path).name
+        if not name:
+            raise ValueError("checkpoint_url must include a checkpoint filename")
+        return name
+    artifact = _toml_artifact(model, kind)
+    if artifact is not None:
+        return artifact["name"]
+    return model.checkpoint if kind == "checkpoint" else model.config
+
+
+def resolve_model_asset_paths(
+    model: Union[str, MelBandModel] = DEFAULT_MODEL,
+    models_dir: Optional[Union[str, Path]] = None,
+    *,
+    checkpoint_url: Optional[str] = None,
+) -> Tuple[Path, Path]:
+    """Resolve loader paths without creating directories or downloading files."""
+    entry = MODEL_REGISTRY.get(model) if isinstance(model, str) else model
+    checkpoint_name = _asset_name(entry, "checkpoint", checkpoint_url)
+    config_name = _asset_name(entry, "config")
+    search_dirs = models_search_dirs(models_dir)
+    # A pre-0.1.4 working-directory cache is a user-selected local artifact,
+    # not a second download target. Preserve that relative path when no modern
+    # cache location was explicitly selected, even if ~/.cache also has a copy.
+    if models_dir is None and not os.environ.get(MODELS_DIR_ENV) and not checkpoint_url:
+        legacy_checkpoint = LEGACY_MODELS_DIR / entry.slug / checkpoint_name
+        if legacy_checkpoint.exists():
+            return legacy_checkpoint, legacy_checkpoint.parent / config_name
+    for base in search_dirs:
+        model_dir = base / entry.slug
+        checkpoint = model_dir / checkpoint_name
+        if checkpoint.exists():
+            return checkpoint, model_dir / config_name
+    model_dir = search_dirs[0] / entry.slug
+    return model_dir / checkpoint_name, model_dir / config_name
+
+
+def _download_checkpoint(model: MelBandModel, model_dir: Path, force: bool,
+                         *, checkpoint_url: Optional[str] = None,
+                         checkpoint_sha256: Optional[str] = None) -> bool:
+    target = model_dir / _asset_name(model, "checkpoint", checkpoint_url)
     if target.exists() and not force:
         print(f"✓ {model.checkpoint} already exists, skipping checkpoint download")
         return True
 
-    url = _checkpoint_url(model)
+    metadata = _toml_artifact(model, "checkpoint")
+    url = checkpoint_url or (metadata or {}).get("url") or _checkpoint_url(model)
     if not url:
         print(f"❌ No download URL known for {model.name}")
         return False
-    sha256, size = _expected_checksum(model.checkpoint)
+    sha256, size = _expected_checksum(target.name)
+    sha256 = checkpoint_sha256 or (metadata or {}).get("sha256") or sha256
+    size = (metadata or {}).get("size") or size
     if sha256 is None:
         print(f"⚠️ No recorded sha256 for {model.checkpoint}; only basic size checks will run")
     print(f"\n🔄 Downloading {model.name} checkpoint...")
@@ -307,17 +362,20 @@ def _download_checkpoint(model: MelBandModel, model_dir: Path, force: bool) -> b
 
 
 def _download_config(model: MelBandModel, model_dir: Path, force: bool) -> bool:
-    target = model_dir / model.config
+    target = model_dir / _asset_name(model, "config")
     if target.exists() and not force:
         print(f"✓ {model.config} already exists, skipping config download")
         return True
     if _copy_packaged_config(model, target):
         return True
-    url = _config_url(model)
+    metadata = _toml_artifact(model, "config")
+    url = (metadata or {}).get("url") or _config_url(model)
     if not url:
         print(f"❌ No config source known for {model.name}")
         return False
-    sha256, size = _expected_checksum(model.config)
+    sha256, size = _expected_checksum(target.name)
+    sha256 = (metadata or {}).get("sha256") or sha256
+    size = (metadata or {}).get("size") or size
     if sha256 is None:
         print(f"⚠️ No recorded sha256 for {model.config}; only basic size checks will run")
     print(f"\n🔄 Downloading {model.name} config...")
@@ -346,7 +404,9 @@ def download_model_assets(models: Sequence[MelBandModel],
 def ensure_model_assets(model: Union[str, MelBandModel] = DEFAULT_MODEL,
                         models_dir: Optional[Union[str, Path]] = None,
                         *,
-                        download_missing: bool = True) -> Tuple[Path, Path]:
+                        download_missing: bool = True,
+                        checkpoint_url: Optional[str] = None,
+                        checkpoint_sha256: Optional[str] = None) -> Tuple[Path, Path]:
     """Resolve (checkpoint_path, config_path) for a registry model, downloading if missing.
 
     Searches models_search_dirs() for an existing checkpoint first (so explicitly
@@ -355,19 +415,19 @@ def ensure_model_assets(model: Union[str, MelBandModel] = DEFAULT_MODEL,
     the first search dir. Raises on failure instead of returning half a model.
     """
     entry = MODEL_REGISTRY.get(model) if isinstance(model, str) else model
+    checkpoint, config = resolve_model_asset_paths(
+        entry, models_dir, checkpoint_url=checkpoint_url
+    )
     search_dirs = models_search_dirs(models_dir)
 
-    for base in search_dirs:
-        model_dir = base / entry.slug
-        checkpoint = model_dir / entry.checkpoint
-        if checkpoint.exists():
-            config = model_dir / entry.config
-            if not config.exists() and not _download_config(entry, model_dir, force=False):
-                raise RuntimeError(
-                    f"Found checkpoint for {entry.name} in {model_dir} but could not "
-                    f"obtain its config ({entry.config})"
-                )
-            return checkpoint, model_dir / entry.config
+    if checkpoint.exists():
+        model_dir = checkpoint.parent
+        if not config.exists() and not _download_config(entry, model_dir, force=False):
+            raise RuntimeError(
+                f"Found checkpoint for {entry.name} in {model_dir} but could not "
+                f"obtain its config ({entry.config})"
+            )
+        return checkpoint, config
 
     if not download_missing:
         raise FileNotFoundError(
@@ -375,14 +435,17 @@ def ensure_model_assets(model: Union[str, MelBandModel] = DEFAULT_MODEL,
             + ", ".join(str(d) for d in search_dirs)
         )
 
-    model_dir = search_dirs[0] / entry.slug
+    model_dir = checkpoint.parent
     model_dir.mkdir(parents=True, exist_ok=True)
     print(f"Model {entry.name} not found locally; downloading to {model_dir}")
-    if not _download_checkpoint(entry, model_dir, force=False):
+    if not _download_checkpoint(
+        entry, model_dir, force=False, checkpoint_url=checkpoint_url,
+        checkpoint_sha256=checkpoint_sha256,
+    ):
         raise RuntimeError(f"Failed to download checkpoint for {entry.name} -- see log above")
     if not _download_config(entry, model_dir, force=False):
         raise RuntimeError(f"Failed to obtain config for {entry.name} -- see log above")
-    return model_dir / entry.checkpoint, model_dir / entry.config
+    return checkpoint, config
 
 
 def parse_args() -> argparse.Namespace:

@@ -296,10 +296,15 @@ with MelBandRoformerSession() as session:
     print(manifest[0]["output_id"], manifest[0]["output_path"])
 ```
 
-`load()` downloads and verifies weights, `infer()` requires a ready session,
-`release()` frees memory while retaining the disk cache, and `cache_info()`
-reports the selected checkpoint. Existing CLI and downloader entry points remain
-available and lazy. Checkpoint URLs and SHA-256 metadata live in the package-owned
-`config/checkpoints.toml` and can be overridden with explicit paths or metadata.
+`load()` is idempotent, `infer()` requires a ready session, and `release()` frees
+the resident model while allowing a later `load()` to rebuild it. `close()` is
+terminal and idempotent (and is called by the context manager). `cache_info()` is
+read-only: it resolves the same default or custom checkpoint path that `load()`
+would use without creating directories or downloading. Devices accept legacy
+automatic selection plus explicit `cpu`, `cuda`, `cuda:N`, and `mps`; unavailable
+explicit accelerators raise instead of silently falling back. The packaged
+`config/checkpoints.toml` is the runtime source for its declared default model's
+URLs and SHA-256 metadata; legacy registry records remain a fallback for other
+community model variants. Existing CLI and downloader entry points remain lazy.
 The returned manifest is JSON-serializable and records each actual file write with
 `input_path`, `track_id`, `output_id`, and `output_path`.

@@ -13,6 +13,7 @@ import argparse
 import sys
 from pathlib import Path
 
+import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from mel_band_roformer import inference as inference_module
@@ -46,6 +47,31 @@ class TestResolveDevice:
         import torch
 
         assert inference_module._resolve_device("cuda:0") == torch.device("cuda:0")
+
+    def test_explicit_cuda_index_is_preserved(self, monkeypatch):
+        import torch
+
+        monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+        monkeypatch.setattr(torch.cuda, "device_count", lambda: 2)
+        assert inference_module._resolve_device("cuda:1") == torch.device("cuda:1")
+
+    def test_unavailable_explicit_accelerators_raise(self, monkeypatch):
+        import torch
+
+        monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+        monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
+        with pytest.raises(RuntimeError, match="CUDA"):
+            inference_module._resolve_device("cuda")
+        with pytest.raises(RuntimeError, match="MPS"):
+            inference_module._resolve_device("mps")
+
+    def test_invalid_cuda_index_raises(self, monkeypatch):
+        import torch
+
+        monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+        monkeypatch.setattr(torch.cuda, "device_count", lambda: 1)
+        with pytest.raises(RuntimeError, match="index 1"):
+            inference_module._resolve_device("cuda:1")
 
 
 class TestSelectDeviceFromArgs:
@@ -120,3 +146,12 @@ class TestSessionLoadDeviceResolution:
 
         session = self._session(tmp_path, monkeypatch, device="cpu").load()
         assert session.device == torch.device("cpu")
+
+    def test_cuda_index_reaches_model(self, tmp_path, monkeypatch):
+        import torch
+
+        monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
+        monkeypatch.setattr(torch.cuda, "device_count", lambda: 2)
+        session = self._session(tmp_path, monkeypatch, device="cuda:1").load()
+        assert session.device == torch.device("cuda:1")
+        assert session._model.loaded_to == torch.device("cuda:1")

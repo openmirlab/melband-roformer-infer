@@ -64,8 +64,8 @@ class MelBandRoformerSession:
     def load(self) -> MelBandRoformerSession:
         if self._status == "ready":
             return self
-        if self._status == "released":
-            raise RuntimeError("cannot load a released MelBandRoformerSession")
+        if self._status == "closed":
+            raise RuntimeError("cannot load a closed MelBandRoformerSession")
         self._status = "loading"
         try:
             from .download import ensure_model_assets, get_file_hash
@@ -76,6 +76,8 @@ class MelBandRoformerSession:
                 self.model_path, self.config_path = ensure_model_assets(
                     self.model_name,
                     models_dir=self.models_dir,
+                    checkpoint_url=self.checkpoint_url,
+                    checkpoint_sha256=self.checkpoint_sha256,
                 )
 
             with self.config_path.open() as handle:
@@ -124,7 +126,9 @@ class MelBandRoformerSession:
             verbose=verbose,
         )
 
-    def release(self):
+    def release(self) -> MelBandRoformerSession:
+        if self._status == "closed":
+            return self
         if self._model is not None and hasattr(self._model, "cpu"):
             self._model.cpu()
         self._model = None
@@ -136,17 +140,33 @@ class MelBandRoformerSession:
         except ImportError:
             pass
         self._status = "released"
+        return self
 
-    def close(self) -> None:
-        self.release()
+    def close(self) -> MelBandRoformerSession:
+        if self._status != "closed":
+            self.release()
+            self._status = "closed"
+        return self
 
     def cache_info(self) -> dict[str, Any]:
+        if self.model_path is not None:
+            checkpoint_path = self.model_path
+            config_path = self.config_path
+        else:
+            from .download import resolve_model_asset_paths
+
+            checkpoint_path, config_path = resolve_model_asset_paths(
+                self.model_name,
+                self.models_dir,
+                checkpoint_url=self.checkpoint_url,
+            )
         return {
             "model": self.model_name,
             "status": self._status,
             "model_loaded": self._model is not None,
             "models_dir": str(self.models_dir) if self.models_dir else None,
-            "checkpoint_path": str(self.model_path) if self.model_path else None,
+            "checkpoint_path": str(checkpoint_path),
+            "config_path": str(config_path) if config_path else None,
             "checkpoint_url": self.checkpoint_url
             or next(
                 (
@@ -156,6 +176,7 @@ class MelBandRoformerSession:
                 ),
                 None,
             ),
+            "cached": checkpoint_path.is_file() and bool(config_path and config_path.is_file()),
         }
 
     def __enter__(self) -> MelBandRoformerSession:

@@ -172,3 +172,13 @@ bs-roformer-infer reached in its own 0.1.2 release.
 
 - Added the additive `MelBandRoformerSession` lifecycle facade and package-owned
   `config/checkpoints.toml` checkpoint metadata.
+- Repaired the session lifecycle: `load()` is idempotent, `release()` is
+  reloadable, and `close()` is terminal/idempotent (including context-manager
+  cleanup). `cache_info()` now shares the loader's path resolver without
+  downloading or creating cache directories.
+- Device selection now validates explicit `cpu`, `cuda`, `cuda:N`, and `mps`
+  requests; unavailable explicit accelerators raise while legacy automatic
+  CUDA-or-CPU behavior remains unchanged.
+- The default model's downloader now reads URL, filename, size, and SHA-256
+  metadata from packaged `config/checkpoints.toml`; non-declared legacy model
+  variants retain the existing registry fallback.
