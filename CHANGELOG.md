@@ -172,6 +172,12 @@ bs-roformer-infer reached in its own 0.1.2 release.
 
 - Added the additive `MelBandRoformerSession` lifecycle facade and package-owned
   `config/checkpoints.toml` checkpoint metadata.
+- Added fourteen strict-load and short-forward-probed MelBand-RoFormer checkpoint
+  declarations: pcunwa Big Beta 7 and Inst V2, becruily vocals/instrumental/
+  deux/karaoke/guitar, anvuew de-reverb main/less-aggressive/mono, and Sucial
+  aspiration main/less-aggressive plus de-reverb-echo v1/v2.
+- Fixed MelBand multi-output inference to write only the config-declared stems,
+  while single-target models still derive the configured residual stem.
 - Repaired the session lifecycle: `load()` is idempotent, `release()` is
   reloadable, and `close()` is terminal/idempotent (including context-manager
   cleanup). `cache_info()` now shares the loader's path resolver without

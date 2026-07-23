@@ -43,7 +43,7 @@ def get_model_from_config(model_type, config):
             'stft_normalized', 'stft_window_fn', 'mask_estimator_depth',
             'multi_stft_resolution_loss_weight', 'multi_stft_resolutions_window_sizes',
             'multi_stft_hop_size', 'multi_stft_normalized', 'multi_stft_window_fn',
-            'match_input_audio_length',
+            'match_input_audio_length', 'mlp_expansion_factor',
         }
         model_config = {k: v for k, v in model_config.items() if k in valid_params}
 
@@ -99,10 +99,8 @@ def demix_track(config, model, mix, device, first_chunk_time=None):
             num_chunks = (total_length + step - 1) // step
 
             if first_chunk_time is None:
-                start_time = time.time()
                 first_chunk = True
             else:
-                start_time = None
                 first_chunk = False
 
             while i < total_length:

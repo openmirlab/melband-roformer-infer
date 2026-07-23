@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, List, Optional
 
 _PACKAGE_ROOT = Path(__file__).resolve().parent
 _MODEL_DATA_PATH = _PACKAGE_ROOT / "data" / "melband_models.json"
@@ -43,6 +43,8 @@ class MelBandModel:
             return ["clean", "residual"]
         if self.category in {"dereverb", "crowd"}:
             return ["dry", "wet"]
+        if self.category == "guitar":
+            return ["Guitar", "Other"]
         return ["vocals", "other"]
 
 

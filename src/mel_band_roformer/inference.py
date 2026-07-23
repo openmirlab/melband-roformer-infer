@@ -92,6 +92,29 @@ def _resolve_output_ids(config: ConfigDict) -> list[str]:
     return instruments
 
 
+def _resolve_residual_output_id(config: ConfigDict) -> str | None:
+    target_instrument = getattr(config.training, "target_instrument", None)
+    instruments = [str(instr) for instr in config.training.instruments]
+    if target_instrument is None:
+        if len(instruments) == 1 and instruments[0].lower() == "vocals":
+            return "instrumental"
+        return None
+
+    target = str(target_instrument)
+    complements = [instr for instr in instruments if instr.lower() != target.lower()]
+
+    if complements:
+        complement = complements[0]
+        if target.lower() == "vocals" and complement.lower() == "other":
+            return "instrumental"
+        return complement
+
+    if target.lower() == "vocals":
+        return "instrumental"
+
+    return None
+
+
 def _record_written_output(
     manifest: OutputManifest,
     *,
@@ -161,7 +184,8 @@ def run_folder(model, args, config, device, verbose: bool = False) -> OutputMani
                 output_path=vocals_path,
             )
 
-        if instruments:
+        residual_output_id = _resolve_residual_output_id(config)
+        if residual_output_id and instruments:
             vocals_output = res[instruments[0]].T
             if original_mono:
                 vocals_output = vocals_output[:, 0]
@@ -169,12 +193,12 @@ def run_folder(model, args, config, device, verbose: bool = False) -> OutputMani
             original_mix, _ = sf.read(path)
             instrumental = original_mix - vocals_output
 
-            instrumental_path = store_dir / f"{path.stem}_instrumental.wav"
+            instrumental_path = store_dir / f"{path.stem}_{residual_output_id}.wav"
             sf.write(instrumental_path, instrumental, sr, subtype="FLOAT")
             _record_written_output(
                 manifest,
                 input_path=path,
-                output_id="instrumental",
+                output_id=residual_output_id,
                 output_path=instrumental_path,
             )
 

@@ -144,6 +144,37 @@ class TestValidParamsFilter:
 
         assert model.num_stems == raw["model"]["num_stems"]
 
+    def test_mlp_expansion_factor_reaches_mask_estimator(self):
+        config = ConfigDict(
+            {
+                "model": {
+                    "dim": 8,
+                    "depth": 1,
+                    "stereo": True,
+                    "num_stems": 1,
+                    "time_transformer_depth": 1,
+                    "freq_transformer_depth": 1,
+                    "num_bands": 2,
+                    "dim_head": 4,
+                    "heads": 1,
+                    "dim_freqs_in": 1025,
+                    "sample_rate": 44100,
+                    "stft_n_fft": 2048,
+                    "stft_hop_length": 512,
+                    "stft_win_length": 2048,
+                    "mask_estimator_depth": 2,
+                    "multi_stft_resolutions_window_sizes": [2048, 1024],
+                    "mlp_expansion_factor": 2,
+                },
+            }
+        )
+
+        model = get_model_from_config("mel_band_roformer", config)
+        first_mask_linear = model.mask_estimators[0].to_freqs[0][0][0]
+
+        assert first_mask_linear.weight.shape[1] == 8
+        assert first_mask_linear.weight.shape[0] == 16
+
 
 class _EchoModel(torch.nn.Module):
     """Returns a tensor of the exact shape demix_track expects for a single-stem chunk."""

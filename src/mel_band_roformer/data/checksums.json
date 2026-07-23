@@ -62,6 +62,14 @@
       "sha256": "9e791258c866c6c8da66052693d8cc3b64f1f42c01e052dbdc570cd278380cc5",
       "size": 835983746
     },
+    "becruily_deux.ckpt": {
+      "sha256": "10255c02295bf3e3865d4ee50ff752d7b19b124ed5fd93b147babc4333eda3aa",
+      "size": 435006815
+    },
+    "becruily_guitar.ckpt": {
+      "sha256": "83472bbf125774af5282d2e0b86df89eaf2dd45e8a4ec8d68e820ebf3e42a83c",
+      "size": 45142183
+    },
     "big_beta5e.ckpt": {
       "sha256": "32b876e1163716a9a007438b5a5107069586aa9b9ca653a5f63013b1edf6920c",
       "size": 1479749810
@@ -78,6 +86,14 @@
       "sha256": "14334637d4520bb4934df0815768a32845c9c1c5a1150429d1151e71864d6f24",
       "size": 1722
     },
+    "big_beta7.ckpt": {
+      "sha256": "9d68b9a8689a3500c45d3418a7811934e557760db07285f483088a0965b0eb88",
+      "size": 944675923
+    },
+    "big_beta7.yaml": {
+      "sha256": "a2ad8056dfdb394422d62dd823f7a02b7f17f6be12870da913bd84b962f2e7c9",
+      "size": 1723
+    },
     "config.yaml": {
       "sha256": "0353adb4e799f971c6038bac7e5675b9dbf85e103ed1be648b67d04990654172",
       "size": 927
@@ -85,6 +101,26 @@
     "config_kimmel_unwa_ft.yaml": {
       "sha256": "0942cb7da8e86ac1be840cc7b9647831c11ffe00327a0b239df256031e6c8355",
       "size": 1722
+    },
+    "config_aspiration_mel_band_roformer.yaml": {
+      "sha256": "1944ff2915dcfce1309fd1d97d931d8da1d1c61392ec0ece2a0f2ad704e2c144",
+      "size": 1932
+    },
+    "config_dereverb-echo_mel_band_roformer.yaml": {
+      "sha256": "f11b8b55ffb58aeae359cd3f885e3e59e3a09886467966c9dca9ceccb2c6a13b",
+      "size": 1925
+    },
+    "config_dereverb_echo_mbr_v2.yaml": {
+      "sha256": "fb26df515b5acc81aa0a281920decd849588d8d09171e9c20fb8cbd5d2efc120",
+      "size": 1135
+    },
+    "config_deux_becruily.yaml": {
+      "sha256": "bb3ea9bce37ca96d63568490d5a92d7e41df3d7726788b6970c10d89eb62d902",
+      "size": 1175
+    },
+    "config_guitar_becruily.yaml": {
+      "sha256": "b681c3f886251b04b666b3f06e87ce65d7ec610e40b5d75915c01782e5444b0e",
+      "size": 1411
     },
     "config_mel_band_roformer_bleed_suppressor_v1.yaml": {
       "sha256": "bca5755de9946ded7fc37f36c1c9c213ed9f091fe0bc19c6fffaaa2ea7815972",
@@ -138,6 +174,10 @@
       "sha256": "723af6755b5624be0a58351a13c930c472b51ef677cf2c7943394fefed7c3d4d",
       "size": 920
     },
+    "config_melbandroformer_inst_v2.yaml": {
+      "sha256": "54ce16388a51980f12f8d7aaee4505c5bb93e3dd674f6cf0d90f0c4cb34d8250",
+      "size": 907
+    },
     "denoise_mel_band_roformer_aufr33_aggr_sdr_27.9768.ckpt": {
       "sha256": "a25e3b233722cd81e2de7b8e798a3fef29d4b9799ccacda60b0dc958a1e2a5bb",
       "size": 913097300
@@ -158,6 +198,10 @@
       "sha256": "396432f5af25992fe82d0286634bd879027c073721db6ab10199e75459708b9f",
       "size": 455862568
     },
+    "dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt": {
+      "sha256": "396432f5af25992fe82d0286634bd879027c073721db6ab10199e75459708b9f",
+      "size": 455862568
+    },
     "dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt": {
       "sha256": "9262877b87e9ebb0fb808a456b0a411fa677f5df31c8383c1254af531c078970",
       "size": 913107578
@@ -165,6 +209,14 @@
     "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt": {
       "sha256": "0db8f1b41c00cead1112e967262a12802fd32e76c0c3a8eb207e772bae25d07b",
       "size": 913107578
+    },
+    "dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt": {
+      "sha256": "f099ee717eb57fb0ad5eb0e7c9ad6787c36168140b61ce2b158b90c2c4ecee79",
+      "size": 913097978
+    },
+    "dereverb_mel_band_roformer_anvuew.yaml": {
+      "sha256": "66963a9d60756076506a230b4e503c553a3beb7b4e9a10e6bcc73dee9dbd4866",
+      "size": 1846
     },
     "inst_gabox.yaml": {
       "sha256": "723af6755b5624be0a58351a13c930c472b51ef677cf2c7943394fefed7c3d4d",
@@ -261,6 +313,10 @@
     "melband_roformer_inst_v1e_plus.ckpt": {
       "sha256": "6a4ddba739f0352407fb6e18b29206b82318ec427fe37fcedb0f83241e4e15fb",
       "size": 913090472
+    },
+    "melband_roformer_inst_v2.ckpt": {
+      "sha256": "bd19766620f7d6f58fdf7aaada7e89907fe41bc64490ce3faa9a6dab15d6e1f2",
+      "size": 1574477088
     },
     "voc_Fv3.ckpt": {
       "sha256": "49d81446b34a7848446efde7898b25bdc32fe872c2393617acb5356649f7ea93",

@@ -91,6 +91,14 @@ already, discovered by outage rather than announcement: the original
 2026-07 audit) and the override was repointed to a Politrees/UVR_resources
 mirror.
 
+The 2026-07-23 scout added fourteen strict-load and short-forward-probed MelBand
+models to `config/checkpoints.toml`: pcunwa Big Beta 7 and Inst V2, becruily
+vocals/instrumental/deux/karaoke/guitar, anvuew de-reverb main/less-aggressive/
+mono, and Sucial aspiration main/less-aggressive plus de-reverb-echo v1/v2.
+The inference output contract now
+uses the config-declared stems for multi-output models and derives a residual
+only for single-target models.
+
 `data/overrides.json` is the single patch point for a future re-host; it
 does not require a code change. See README's "What This Project Will NEVER
 Bundle" for the user-facing contract (auto-download, manual path, sha256

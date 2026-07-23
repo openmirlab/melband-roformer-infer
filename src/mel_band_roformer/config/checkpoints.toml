@@ -21,3 +21,297 @@ name = "config_vocals_mel_band_roformer.yaml"
 url = "https://raw.githubusercontent.com/TRvlvr/application_data/main/mdx_model_data/mdx_c_configs/config_vocals_mel_band_roformer.yaml"
 sha256 = "5e380dfa5d5757ac4c2b7f6ef607b93d5058ecff805e7b05ed730a47b90d103c"
 size = 728
+
+[models.melband-roformer-big-beta7]
+model = "melband-roformer-big-beta7"
+license = "not-reviewed"
+provenance = "pcunwa/Mel-Band-Roformer-big Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "1508d1ed7c54cb0017b2cbfaabdaf3ca87d2cf74"
+updated_at = "2026-07-23"
+
+[[models.melband-roformer-big-beta7.artifacts]]
+kind = "checkpoint"
+name = "big_beta7.ckpt"
+url = "https://huggingface.co/pcunwa/Mel-Band-Roformer-big/resolve/main/big_beta7.ckpt"
+sha256 = "9d68b9a8689a3500c45d3418a7811934e557760db07285f483088a0965b0eb88"
+size = 944675923
+
+[[models.melband-roformer-big-beta7.artifacts]]
+kind = "config"
+name = "big_beta7.yaml"
+url = "https://huggingface.co/pcunwa/Mel-Band-Roformer-big/resolve/main/big_beta7.yaml"
+sha256 = "a2ad8056dfdb394422d62dd823f7a02b7f17f6be12870da913bd84b962f2e7c9"
+size = 1723
+
+[models.roformer-model-melband-roformer-kim-inst-v2-by-unwa]
+model = "roformer-model-melband-roformer-kim-inst-v2-by-unwa"
+license = "not-reviewed"
+provenance = "pcunwa/Mel-Band-Roformer-Inst Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "f86cd9e99d63eb9499b00fca424bc4ed8a8aeaba"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-kim-inst-v2-by-unwa.artifacts]]
+kind = "checkpoint"
+name = "melband_roformer_inst_v2.ckpt"
+url = "https://huggingface.co/pcunwa/Mel-Band-Roformer-Inst/resolve/main/melband_roformer_inst_v2.ckpt"
+sha256 = "bd19766620f7d6f58fdf7aaada7e89907fe41bc64490ce3faa9a6dab15d6e1f2"
+size = 1574477088
+
+[[models.roformer-model-melband-roformer-kim-inst-v2-by-unwa.artifacts]]
+kind = "config"
+name = "config_melbandroformer_inst_v2.yaml"
+url = "https://huggingface.co/pcunwa/Mel-Band-Roformer-Inst/resolve/main/config_melbandroformer_inst_v2.yaml"
+sha256 = "54ce16388a51980f12f8d7aaee4505c5bb93e3dd674f6cf0d90f0c4cb34d8250"
+size = 907
+
+[models.roformer-model-melband-roformer-vocals-by-becruily]
+model = "roformer-model-melband-roformer-vocals-by-becruily"
+license = "not-reviewed"
+provenance = "becruily/mel-band-roformer-vocals Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2024-12-27"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-vocals-by-becruily.artifacts]]
+kind = "checkpoint"
+name = "mel_band_roformer_vocals_becruily.ckpt"
+url = "https://huggingface.co/becruily/mel-band-roformer-vocals/resolve/main/mel_band_roformer_vocals_becruily.ckpt"
+sha256 = "a05961310cc55fbb901290c2e8be02682942f73522b6ac76bf2ec11e347ed95a"
+size = 913107578
+
+[[models.roformer-model-melband-roformer-vocals-by-becruily.artifacts]]
+kind = "config"
+name = "config_mel_band_roformer_vocals_becruily.yaml"
+url = "https://huggingface.co/becruily/mel-band-roformer-vocals/resolve/main/config_vocals_becruily.yaml"
+sha256 = "186792a36db251fc5834a883c519b609ca80abbd2bfc4668eea43ee3a4223985"
+size = 1723
+
+[models.roformer-model-melband-roformer-instrumental-by-becruily]
+model = "roformer-model-melband-roformer-instrumental-by-becruily"
+license = "not-reviewed"
+provenance = "becruily/mel-band-roformer-instrumental Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2024-12-27"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-instrumental-by-becruily.artifacts]]
+kind = "checkpoint"
+name = "mel_band_roformer_instrumental_becruily.ckpt"
+url = "https://huggingface.co/becruily/mel-band-roformer-instrumental/resolve/main/mel_band_roformer_instrumental_becruily.ckpt"
+sha256 = "a8da6632a1c25efb1c9be783ce9ea367d226d4b918cd6c3717c8b1d7a396041d"
+size = 913106900
+
+[[models.roformer-model-melband-roformer-instrumental-by-becruily.artifacts]]
+kind = "config"
+name = "config_mel_band_roformer_instrumental_becruily.yaml"
+url = "https://huggingface.co/becruily/mel-band-roformer-instrumental/resolve/main/config_instrumental_becruily.yaml"
+sha256 = "a222235643d329817a1123d82d8eb38392d919e90ed597e053de49c092d3b442"
+size = 1736
+
+[models.roformer-model-melband-roformer-de-reverb-by-anvuew]
+model = "roformer-model-melband-roformer-de-reverb-by-anvuew"
+license = "not-reviewed"
+provenance = "anvuew/dereverb_mel_band_roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2025-02-11"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-by-anvuew.artifacts]]
+kind = "checkpoint"
+name = "dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt"
+url = "https://huggingface.co/anvuew/dereverb_mel_band_roformer/resolve/main/dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt"
+sha256 = "9262877b87e9ebb0fb808a456b0a411fa677f5df31c8383c1254af531c078970"
+size = 913107578
+
+[[models.roformer-model-melband-roformer-de-reverb-by-anvuew.artifacts]]
+kind = "config"
+name = "dereverb_mel_band_roformer_anvuew.yaml"
+url = "https://huggingface.co/anvuew/dereverb_mel_band_roformer/resolve/main/dereverb_mel_band_roformer_anvuew.yaml"
+sha256 = "66963a9d60756076506a230b4e503c553a3beb7b4e9a10e6bcc73dee9dbd4866"
+size = 1846
+
+[models.roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew]
+model = "roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew"
+license = "not-reviewed"
+provenance = "anvuew/dereverb_mel_band_roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2025-02-11"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew.artifacts]]
+kind = "checkpoint"
+name = "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt"
+url = "https://huggingface.co/anvuew/dereverb_mel_band_roformer/resolve/main/dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt"
+sha256 = "0db8f1b41c00cead1112e967262a12802fd32e76c0c3a8eb207e772bae25d07b"
+size = 913107578
+
+[[models.roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew.artifacts]]
+kind = "config"
+name = "dereverb_mel_band_roformer_anvuew.yaml"
+url = "https://huggingface.co/anvuew/dereverb_mel_band_roformer/resolve/main/dereverb_mel_band_roformer_anvuew.yaml"
+sha256 = "66963a9d60756076506a230b4e503c553a3beb7b4e9a10e6bcc73dee9dbd4866"
+size = 1846
+
+[models.roformer-model-melband-roformer-de-reverb-mono-by-anvuew]
+model = "roformer-model-melband-roformer-de-reverb-mono-by-anvuew"
+license = "not-reviewed"
+provenance = "anvuew/dereverb_mel_band_roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2025-02-11"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-mono-by-anvuew.artifacts]]
+kind = "checkpoint"
+name = "dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt"
+url = "https://huggingface.co/anvuew/dereverb_mel_band_roformer/resolve/main/dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt"
+sha256 = "f099ee717eb57fb0ad5eb0e7c9ad6787c36168140b61ce2b158b90c2c4ecee79"
+size = 913097978
+
+[[models.roformer-model-melband-roformer-de-reverb-mono-by-anvuew.artifacts]]
+kind = "config"
+name = "dereverb_mel_band_roformer_anvuew.yaml"
+url = "https://huggingface.co/anvuew/dereverb_mel_band_roformer/resolve/main/dereverb_mel_band_roformer_anvuew.yaml"
+sha256 = "66963a9d60756076506a230b4e503c553a3beb7b4e9a10e6bcc73dee9dbd4866"
+size = 1846
+
+[models.roformer-model-melband-roformer-deux-by-becruily]
+model = "roformer-model-melband-roformer-deux-by-becruily"
+license = "not-reviewed"
+provenance = "becruily/mel-band-roformer-deux Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2025-12-29"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-deux-by-becruily.artifacts]]
+kind = "checkpoint"
+name = "becruily_deux.ckpt"
+url = "https://huggingface.co/becruily/mel-band-roformer-deux/resolve/main/becruily_deux.ckpt"
+sha256 = "10255c02295bf3e3865d4ee50ff752d7b19b124ed5fd93b147babc4333eda3aa"
+size = 435006815
+
+[[models.roformer-model-melband-roformer-deux-by-becruily.artifacts]]
+kind = "config"
+name = "config_deux_becruily.yaml"
+url = "https://huggingface.co/becruily/mel-band-roformer-deux/resolve/main/config_deux_becruily.yaml"
+sha256 = "bb3ea9bce37ca96d63568490d5a92d7e41df3d7726788b6970c10d89eb62d902"
+size = 1175
+
+[models.roformer-model-melband-roformer-karaoke-by-becruily]
+model = "roformer-model-melband-roformer-karaoke-by-becruily"
+license = "not-reviewed"
+provenance = "becruily/mel-band-roformer-karaoke Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2025-04-15"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-karaoke-by-becruily.artifacts]]
+kind = "checkpoint"
+name = "mel_band_roformer_karaoke_becruily.ckpt"
+url = "https://huggingface.co/becruily/mel-band-roformer-karaoke/resolve/main/mel_band_roformer_karaoke_becruily.ckpt"
+sha256 = "d3aa262ac01df870b9fc033e9c7b6cad33fe04fc9c148b6c40841326a515a0e0"
+size = 1719139254
+
+[[models.roformer-model-melband-roformer-karaoke-by-becruily.artifacts]]
+kind = "config"
+name = "config_mel_band_roformer_karaoke_becruily.yaml"
+url = "https://huggingface.co/becruily/mel-band-roformer-karaoke/resolve/main/config_karaoke_becruily.yaml"
+sha256 = "cd37b0dcc285fc22d88090415722ac7127ee1d9ea2f3346c3b8d8fcc61e0c74b"
+size = 1724
+
+[models.roformer-model-melband-roformer-guitar-by-becruily]
+model = "roformer-model-melband-roformer-guitar-by-becruily"
+license = "not-reviewed"
+provenance = "becruily/mel-band-roformer-guitar Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2025-05-20"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-guitar-by-becruily.artifacts]]
+kind = "checkpoint"
+name = "becruily_guitar.ckpt"
+url = "https://huggingface.co/becruily/mel-band-roformer-guitar/resolve/main/becruily_guitar.ckpt"
+sha256 = "83472bbf125774af5282d2e0b86df89eaf2dd45e8a4ec8d68e820ebf3e42a83c"
+size = 45142183
+
+[[models.roformer-model-melband-roformer-guitar-by-becruily.artifacts]]
+kind = "config"
+name = "config_guitar_becruily.yaml"
+url = "https://huggingface.co/becruily/mel-band-roformer-guitar/resolve/main/config_guitar_becruily.yaml"
+sha256 = "b681c3f886251b04b666b3f06e87ce65d7ec610e40b5d75915c01782e5444b0e"
+size = 1411
+
+[models.roformer-model-melband-roformer-aspiration-by-sucial]
+model = "roformer-model-melband-roformer-aspiration-by-sucial"
+license = "not-reviewed"
+provenance = "Sucial/Aspiration_Mel_Band_Roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2024-09-13"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-aspiration-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "aspiration_mel_band_roformer_sdr_18.9845.ckpt"
+url = "https://huggingface.co/Sucial/Aspiration_Mel_Band_Roformer/resolve/main/aspiration_mel_band_roformer_sdr_18.9845.ckpt"
+sha256 = "9e791258c866c6c8da66052693d8cc3b64f1f42c01e052dbdc570cd278380cc5"
+size = 835983746
+
+[[models.roformer-model-melband-roformer-aspiration-by-sucial.artifacts]]
+kind = "config"
+name = "config_aspiration_mel_band_roformer.yaml"
+url = "https://huggingface.co/Sucial/Aspiration_Mel_Band_Roformer/resolve/main/config_aspiration_mel_band_roformer.yaml"
+sha256 = "1944ff2915dcfce1309fd1d97d931d8da1d1c61392ec0ece2a0f2ad704e2c144"
+size = 1932
+
+[models.roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial]
+model = "roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial"
+license = "not-reviewed"
+provenance = "Sucial/Aspiration_Mel_Band_Roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2024-09-13"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt"
+url = "https://huggingface.co/Sucial/Aspiration_Mel_Band_Roformer/resolve/main/aspiration_mel_band_roformer_less_aggr_sdr_18.1201.ckpt"
+sha256 = "83bfe991cec4fbadde9f30d1f79cd5293ad0b1f936256be327bba5cbb4883374"
+size = 835982664
+
+[[models.roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial.artifacts]]
+kind = "config"
+name = "config_aspiration_mel_band_roformer.yaml"
+url = "https://huggingface.co/Sucial/Aspiration_Mel_Band_Roformer/resolve/main/config_aspiration_mel_band_roformer.yaml"
+sha256 = "1944ff2915dcfce1309fd1d97d931d8da1d1c61392ec0ece2a0f2ad704e2c144"
+size = 1932
+
+[models.roformer-model-melband-roformer-de-reverb-echo-by-sucial]
+model = "roformer-model-melband-roformer-de-reverb-echo-by-sucial"
+license = "not-reviewed"
+provenance = "Sucial/Dereverb-Echo_Mel_Band_Roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2024-12-28"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-echo-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt"
+url = "https://huggingface.co/Sucial/Dereverb-Echo_Mel_Band_Roformer/resolve/main/dereverb-echo_mel_band_roformer_sdr_10.0169.ckpt"
+sha256 = "cd2b737a394cfb80cd48cc9fcbaf89f5f4062f6b93066c2911617a06d8b7860a"
+size = 835997896
+
+[[models.roformer-model-melband-roformer-de-reverb-echo-by-sucial.artifacts]]
+kind = "config"
+name = "config_dereverb-echo_mel_band_roformer.yaml"
+url = "https://huggingface.co/Sucial/Dereverb-Echo_Mel_Band_Roformer/resolve/main/config_dereverb-echo_mel_band_roformer.yaml"
+sha256 = "f11b8b55ffb58aeae359cd3f885e3e59e3a09886467966c9dca9ceccb2c6a13b"
+size = 1925
+
+[models.roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial]
+model = "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial"
+license = "not-reviewed"
+provenance = "Sucial/Dereverb-Echo_Mel_Band_Roformer Hugging Face repository; strict-load and short-forward probed 2026-07-23"
+source_revision = "2024-12-28"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt"
+url = "https://huggingface.co/Sucial/Dereverb-Echo_Mel_Band_Roformer/resolve/main/dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt"
+sha256 = "396432f5af25992fe82d0286634bd879027c073721db6ab10199e75459708b9f"
+size = 455862568
+
+[[models.roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial.artifacts]]
+kind = "config"
+name = "config_dereverb_echo_mbr_v2.yaml"
+url = "https://huggingface.co/Sucial/Dereverb-Echo_Mel_Band_Roformer/resolve/main/config_dereverb_echo_mbr_v2.yaml"
+sha256 = "fb26df515b5acc81aa0a281920decd849588d8d09171e9c20fb8cbd5d2efc120"
+size = 1135

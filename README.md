@@ -142,14 +142,25 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 |-------|----------|-------------|
 | **`melband-roformer-kim-vocals`** | vocals | **Recommended** - Original MelBand Roformer by Kimberley Jensen |
 | `melband-roformer-big-beta6` | vocals | Big Beta 6 by unwa |
+| `melband-roformer-big-beta7` | vocals | Big Beta 7 by unwa |
 | `roformer-model-melband-roformer-vocals-by-becruily` | vocals | Vocals by becruily |
+| `roformer-model-melband-roformer-instrumental-by-becruily` | instrumental | Instrumental by becruily |
+| `roformer-model-melband-roformer-kim-inst-v2-by-unwa` | instrumental | Inst V2 by unwa |
+| `roformer-model-melband-roformer-deux-by-becruily` | instvoc | Vocals/Instrumental by becruily |
 | `roformer-model-melband-roformer-instrumental-by-gabox` | instrumental | Instrumental by Gabox |
 | `roformer-model-melband-roformer-karaoke-by-becruily` | karaoke | Karaoke by becruily |
+| `roformer-model-melband-roformer-guitar-by-becruily` | guitar | Guitar by becruily |
 | `melband-roformer-denoise-debleed-gabox` | denoise | Denoise Debleed by Gabox |
 | `roformer-model-melband-roformer-de-reverb-by-anvuew` | dereverb | De-Reverb by anvuew |
-| ... | ... | See `--list-models` for 89 models |
+| `roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew` | dereverb | De-Reverb Less Aggressive by anvuew |
+| `roformer-model-melband-roformer-de-reverb-mono-by-anvuew` | dereverb | De-Reverb Mono by anvuew |
+| `roformer-model-melband-roformer-aspiration-by-sucial` | aspiration | Aspiration by Sucial |
+| `roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial` | aspiration | Aspiration Less Aggressive by Sucial |
+| `roformer-model-melband-roformer-de-reverb-echo-by-sucial` | dereverb | De-Reverb-Echo by Sucial |
+| `roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial` | dereverb | De-Reverb-Echo V2 by Sucial |
+| ... | ... | See `--list-models` for 93 models |
 
-**Categories**: vocals, instrumental, karaoke, denoise, dereverb, crowd, general, aspiration
+**Categories**: vocals, instrumental, instvoc, karaoke, guitar, denoise, dereverb, crowd, general, aspiration
 
 > **Note on download availability** (re-audited 2026-07-12): this registry is
 > bulk-imported from several third-party contributors' Hugging Face repos, some

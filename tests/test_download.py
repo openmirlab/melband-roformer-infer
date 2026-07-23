@@ -20,6 +20,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from mel_band_roformer import download as download_module
+from mel_band_roformer.checkpoints import load_checkpoints
 from mel_band_roformer.model_registry import MODEL_REGISTRY, DEFAULT_MODEL
 
 KARAOKE_GABOX_SLUG = "melband-roformer-karaoke-gabox"
@@ -74,6 +75,71 @@ class TestPackagedConfigInvariant:
         assert copied.read_bytes() == (
             download_module.PACKAGE_ROOT / "configs" / model.config
         ).read_bytes()
+
+
+class TestDirectProbedCheckpointMetadata:
+    """The direct-safe MelBand checkpoints are declared in package TOML metadata."""
+
+    def test_direct_probed_models_are_declared(self):
+        models = load_checkpoints()["models"]
+
+        expected = {
+            "roformer-model-melband-roformer-vocals-by-becruily",
+            "roformer-model-melband-roformer-instrumental-by-becruily",
+            "roformer-model-melband-roformer-de-reverb-by-anvuew",
+            "roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew",
+            "roformer-model-melband-roformer-de-reverb-mono-by-anvuew",
+            "roformer-model-melband-roformer-deux-by-becruily",
+            "roformer-model-melband-roformer-karaoke-by-becruily",
+            "roformer-model-melband-roformer-guitar-by-becruily",
+            "roformer-model-melband-roformer-aspiration-by-sucial",
+            "roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial",
+            "roformer-model-melband-roformer-de-reverb-echo-by-sucial",
+            "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial",
+            "melband-roformer-big-beta7",
+            "roformer-model-melband-roformer-kim-inst-v2-by-unwa",
+        }
+
+        assert expected.issubset(models)
+
+    def test_dereverb_mono_legacy_entry_uses_real_upstream_filename(self):
+        model = MODEL_REGISTRY.get("roformer-model-melband-roformer-de-reverb-mono-by-anvuew")
+
+        assert model.checkpoint == "dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt"
+        assert download_module.CHECKSUMS[model.checkpoint]["sha256"] == (
+            "f099ee717eb57fb0ad5eb0e7c9ad6787c36168140b61ce2b158b90c2c4ecee79"
+        )
+
+    def test_variation_safe_legacy_entries_use_probe_verified_assets(self):
+        expected = {
+            "roformer-model-melband-roformer-deux-by-becruily": (
+                "becruily_deux.ckpt",
+                "config_deux_becruily.yaml",
+            ),
+            "roformer-model-melband-roformer-guitar-by-becruily": (
+                "becruily_guitar.ckpt",
+                "config_guitar_becruily.yaml",
+            ),
+            "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial": (
+                "dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt",
+                "config_dereverb_echo_mbr_v2.yaml",
+            ),
+            "melband-roformer-big-beta7": (
+                "big_beta7.ckpt",
+                "big_beta7.yaml",
+            ),
+            "roformer-model-melband-roformer-kim-inst-v2-by-unwa": (
+                "melband_roformer_inst_v2.ckpt",
+                "config_melbandroformer_inst_v2.yaml",
+            ),
+        }
+
+        for slug, (checkpoint, config) in expected.items():
+            model = MODEL_REGISTRY.get(slug)
+            assert model.checkpoint == checkpoint
+            assert model.config == config
+            assert checkpoint in download_module.CHECKSUMS
+            assert config in download_module.CHECKSUMS
 
 
 class TestJarredouOutageRegression:

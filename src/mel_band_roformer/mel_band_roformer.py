@@ -14,13 +14,13 @@ Reads: .attend.Attend, rotary_embedding_torch.RotaryEmbedding, beartype, einops,
 from functools import partial
 
 import torch
-from torch import nn, einsum, Tensor
+from torch import nn
 from torch.nn import Module, ModuleList
 import torch.nn.functional as F
 
 from .attend import Attend
 
-from beartype.typing import Tuple, Optional, List, Callable
+from beartype.typing import Tuple, Optional, Callable
 from beartype import beartype
 
 from rotary_embedding_torch import RotaryEmbedding
@@ -245,8 +245,6 @@ class MaskEstimator(Module):
         dim_hidden = dim * mlp_expansion_factor
 
         for dim_in in dim_inputs:
-            net = []
-
             mlp = nn.Sequential(
                 MLP(dim, dim_in * 2, dim_hidden=dim_hidden, depth=depth),
                 nn.GLU(dim=-1)
@@ -301,6 +299,7 @@ class MelBandRoformer(Module):
             multi_stft_normalized=False,
             multi_stft_window_fn: Callable = torch.hann_window,
             match_input_audio_length=False,  # if True, pad output tensor to match length of input tensor
+            mlp_expansion_factor=4,
     ):
         super().__init__()
 
@@ -392,7 +391,8 @@ class MelBandRoformer(Module):
             mask_estimator = MaskEstimator(
                 dim=dim,
                 dim_inputs=freqs_per_bands_with_complex,
-                depth=mask_estimator_depth
+                depth=mask_estimator_depth,
+                mlp_expansion_factor=mlp_expansion_factor,
             )
 
             self.mask_estimators.append(mask_estimator)

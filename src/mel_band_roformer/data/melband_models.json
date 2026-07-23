@@ -12,6 +12,12 @@
       "config": "big_beta6.yaml",
       "category": "vocals"
     },
+    "melband-roformer-big-beta7": {
+      "name": "MelBand Roformer Big Beta 7 (by unwa)",
+      "checkpoint": "big_beta7.ckpt",
+      "config": "big_beta7.yaml",
+      "category": "vocals"
+    },
     "melband-roformer-denoise-debleed-gabox": {
       "name": "MelBand Roformer Denoise Debleed (Gabox)",
       "checkpoint": "denoisedebleed.ckpt",
@@ -212,8 +218,8 @@
     },
     "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial": {
       "name": "Roformer Model: MelBand Roformer | De-Reverb-Echo V2 by Sucial",
-      "checkpoint": "dereverb-echo_mel_band_roformer_sdr_13.4843_v2.ckpt",
-      "config": "config_dereverb-echo_mel_band_roformer_sdr_13.4843_v2.yaml",
+      "checkpoint": "dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt",
+      "config": "config_dereverb_echo_mbr_v2.yaml",
       "category": "dereverb"
     },
     "roformer-model-melband-roformer-de-reverb-less-aggressive-by-anvuew": {
@@ -224,7 +230,7 @@
     },
     "roformer-model-melband-roformer-de-reverb-mono-by-anvuew": {
       "name": "Roformer Model: MelBand Roformer | De-Reverb Mono by anvuew",
-      "checkpoint": "dereverb_mel_band_roformer_mono_anvuew.ckpt",
+      "checkpoint": "dereverb_mel_band_roformer_mono_anvuew_sdr_20.4029.ckpt",
       "config": "dereverb_mel_band_roformer_anvuew.yaml",
       "category": "dereverb"
     },
@@ -269,6 +275,18 @@
       "checkpoint": "mel_band_roformer_instrumental_becruily.ckpt",
       "config": "config_mel_band_roformer_instrumental_becruily.yaml",
       "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-deux-by-becruily": {
+      "name": "Roformer Model: MelBand Roformer | Deux by becruily",
+      "checkpoint": "becruily_deux.ckpt",
+      "config": "config_deux_becruily.yaml",
+      "category": "instvoc"
+    },
+    "roformer-model-melband-roformer-guitar-by-becruily": {
+      "name": "Roformer Model: MelBand Roformer | Guitar by becruily",
+      "checkpoint": "becruily_guitar.ckpt",
+      "config": "config_guitar_becruily.yaml",
+      "category": "guitar"
     },
     "roformer-model-melband-roformer-instrumental-by-gabox": {
       "name": "Roformer Model: MelBand Roformer | Instrumental by Gabox",
@@ -436,6 +454,12 @@
       "name": "Roformer Model: MelBand Roformer Kim | Inst V1 (E) Plus by Unwa",
       "checkpoint": "melband_roformer_inst_v1e_plus.ckpt",
       "config": "config_melbandroformer_inst.yaml",
+      "category": "instrumental"
+    },
+    "roformer-model-melband-roformer-kim-inst-v2-by-unwa": {
+      "name": "Roformer Model: MelBand Roformer Kim | Inst V2 by Unwa",
+      "checkpoint": "melband_roformer_inst_v2.ckpt",
+      "config": "config_melbandroformer_inst_v2.yaml",
       "category": "instrumental"
     },
     "roformer-model-melband-roformer-kim-inst-v1-plus-by-unwa": {

@@ -51,6 +51,19 @@ def _fake_demix_track(config, model, mixture, device, first_chunk_time=None):
     return {"vocals": vocals}, 0.01
 
 
+def _fake_demix_from_config(config, model, mixture, device, first_chunk_time=None):
+    channels, length = mixture.shape
+    output_ids = (
+        [str(config.training.target_instrument)]
+        if getattr(config.training, "target_instrument", None) is not None
+        else [str(instrument) for instrument in config.training.instruments]
+    )
+    return {
+        output_id: np.zeros((channels, length), dtype=np.float32)
+        for output_id in output_ids
+    }, 0.01
+
+
 class TestRunFolderManifest:
     def test_returns_manifest_for_vocals_and_derived_instrumental(self, tmp_path, monkeypatch):
         input_dir = tmp_path / "in"
@@ -116,6 +129,70 @@ class TestRunFolderManifest:
             str(beta_path),
         ]
         assert all(Path(entry["output_path"]).exists() for entry in manifest)
+
+    def test_single_non_vocal_target_uses_configured_residual_name(self, tmp_path, monkeypatch):
+        input_dir = tmp_path / "in"
+        input_dir.mkdir()
+        store_dir = tmp_path / "out"
+        track_path = input_dir / "track.wav"
+        _write_short_wav(track_path)
+
+        config = ConfigDict(
+            {
+                "training": {
+                    "instruments": ["Guitar", "Other"],
+                    "target_instrument": "Guitar",
+                },
+                "inference": {"chunk_size": 100, "num_overlap": 2},
+            }
+        )
+
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_from_config)
+
+        manifest = inference_module.run_folder(
+            _NoOpModel(),
+            argparse.Namespace(input_folder=input_dir, store_dir=store_dir),
+            config,
+            device="cpu",
+            verbose=True,
+        )
+
+        assert [(entry["output_id"], Path(entry["output_path"]).name) for entry in manifest] == [
+            ("Guitar", "track_Guitar.wav"),
+            ("Other", "track_Other.wav"),
+        ]
+
+    def test_multi_output_model_does_not_derive_extra_instrumental(self, tmp_path, monkeypatch):
+        input_dir = tmp_path / "in"
+        input_dir.mkdir()
+        store_dir = tmp_path / "out"
+        track_path = input_dir / "track.wav"
+        _write_short_wav(track_path)
+
+        config = ConfigDict(
+            {
+                "training": {
+                    "instruments": ["Vocals", "Instrumental"],
+                    "target_instrument": None,
+                },
+                "inference": {"chunk_size": 100, "num_overlap": 2},
+            }
+        )
+
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_from_config)
+
+        manifest = inference_module.run_folder(
+            _NoOpModel(),
+            argparse.Namespace(input_folder=input_dir, store_dir=store_dir),
+            config,
+            device="cpu",
+            verbose=True,
+        )
+
+        assert [(entry["output_id"], Path(entry["output_path"]).name) for entry in manifest] == [
+            ("Vocals", "track_Vocals.wav"),
+            ("Instrumental", "track_Instrumental.wav"),
+        ]
 
 
 class TestSessionManifest:
