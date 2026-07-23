@@ -113,7 +113,7 @@ def main():
         # Test 1: Load with safe_load
         try:
             config = load_config_safe(config_path)
-            print(f"  ✅ Config loads with safe_load")
+            print("  ✅ Config loads with safe_load")
         except Exception as e:
             print(f"  ❌ Failed to load: {e}")
             failed += 1
@@ -123,23 +123,23 @@ def main():
         param = config.model.get("multi_stft_resolutions_window_sizes")
         if param is not None:
             if isinstance(param, list):
-                print(f"  ✅ multi_stft_resolutions_window_sizes is list (will be converted)")
+                print("  ✅ multi_stft_resolutions_window_sizes is list (will be converted)")
             else:
                 print(f"  ⚠️  Unexpected type: {type(param).__name__}")
 
         # Test 3: Model instantiation
         if not hasattr(config, "training"):
-            print(f"  ⏭️  Skipped model test (missing 'training' section)")
+            print("  ⏭️  Skipped model test (missing 'training' section)")
             skipped += 1
             continue
 
         try:
             model = get_model_from_config("mel_band_roformer", config)
             if model is not None:
-                print(f"  ✅ Model instantiated successfully")
+                print("  ✅ Model instantiated successfully")
                 passed += 1
             else:
-                print(f"  ❌ Model is None")
+                print("  ❌ Model is None")
                 failed += 1
         except Exception as e:
             print(f"  ❌ Model instantiation failed: {e}")
