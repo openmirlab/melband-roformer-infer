@@ -315,3 +315,129 @@ name = "config_dereverb_echo_mbr_v2.yaml"
 url = "https://huggingface.co/Sucial/Dereverb-Echo_Mel_Band_Roformer/resolve/main/config_dereverb_echo_mbr_v2.yaml"
 sha256 = "fb26df515b5acc81aa0a281920decd849588d8d09171e9c20fb8cbd5d2efc120"
 size = 1135
+
+[models.roformer-model-mel-roformer-viperx-1143]
+model = "roformer-model-mel-roformer-viperx-1143"
+license = "not-reviewed"
+provenance = "nomadkaraoke/python-audio-separator model-configs GitHub release; strict-load and short-forward probed 2026-07-23"
+source_revision = "2026-07-23"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-mel-roformer-viperx-1143.artifacts]]
+kind = "checkpoint"
+name = "model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt"
+sha256 = "21b9d0958e35b8ebfbe2afe69bbd5444e5ffe2f5d80ae0d583b833d2f3c0d139"
+size = 1007816988
+
+[[models.roformer-model-mel-roformer-viperx-1143.artifacts]]
+kind = "config"
+name = "model_mel_band_roformer_ep_3005_sdr_11.4360.yaml"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/model_mel_band_roformer_ep_3005_sdr_11.4360.yaml"
+sha256 = "d9b083b48dfdd0bd10f8a29a9c18777b0419496d938827f48a1db31bf0193aa3"
+size = 1794
+
+[models.roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa]
+model = "roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa"
+license = "not-reviewed"
+provenance = "nomadkaraoke/python-audio-separator model-configs GitHub release; strict-load and short-forward probed 2026-07-23"
+source_revision = "2026-07-23"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa.artifacts]]
+kind = "checkpoint"
+name = "melband_roformer_instvoc_duality_v1.ckpt"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_instvoc_duality_v1.ckpt"
+sha256 = "4640a59d454bf9f69d67460592ab71e7cdce3afa0c0a6f0cf4500bb4ac0b8381"
+size = 1719116358
+
+[[models.roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa.artifacts]]
+kind = "config"
+name = "config_melbandroformer_instvoc_duality.yaml"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_instvoc_duality.yaml"
+sha256 = "62dbc3ecf29c7ac99df35003f8cb72da3348d646cb5e6d50e07323551c3d968f"
+size = 911
+
+[models.roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa]
+model = "roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa"
+license = "not-reviewed"
+provenance = "nomadkaraoke/python-audio-separator model-configs GitHub release; strict-load and short-forward probed 2026-07-23"
+source_revision = "2026-07-23"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa.artifacts]]
+kind = "checkpoint"
+name = "melband_roformer_instvox_duality_v2.ckpt"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/melband_roformer_instvox_duality_v2.ckpt"
+sha256 = "b4a69558708f2857e36ac86a0e03ed95c4e3d8b9c5b8113963987d0d7df7e20f"
+size = 1719116358
+
+[[models.roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa.artifacts]]
+kind = "config"
+name = "config_melbandroformer_instvoc_duality.yaml"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_melbandroformer_instvoc_duality.yaml"
+sha256 = "62dbc3ecf29c7ac99df35003f8cb72da3348d646cb5e6d50e07323551c3d968f"
+size = 911
+
+[models.roformer-model-melband-roformer-de-reverb-big-by-sucial]
+model = "roformer-model-melband-roformer-de-reverb-big-by-sucial"
+license = "not-reviewed"
+provenance = "nomadkaraoke/python-audio-separator model-configs GitHub release; strict-load and short-forward probed 2026-07-23"
+source_revision = "2026-07-23"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-big-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "dereverb_big_mbr_ep_362.ckpt"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_big_mbr_ep_362.ckpt"
+sha256 = "0506455e74ffc02bbec700df9863ae243597034003815f1418227c6dee33b6ea"
+size = 455864012
+
+[[models.roformer-model-melband-roformer-de-reverb-big-by-sucial.artifacts]]
+kind = "config"
+name = "config_dereverb_echo_mel_band_roformer_v2.yaml"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_echo_mel_band_roformer_v2.yaml"
+sha256 = "b801c49dbc09372f85281127adde7ded28f475d98e9940efba4a2f45202b38f2"
+size = 1105
+
+[models.roformer-model-melband-roformer-de-reverb-super-big-by-sucial]
+model = "roformer-model-melband-roformer-de-reverb-super-big-by-sucial"
+license = "not-reviewed"
+provenance = "nomadkaraoke/python-audio-separator model-configs GitHub release; strict-load and short-forward probed 2026-07-23"
+source_revision = "2026-07-23"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-super-big-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "dereverb_super_big_mbr_ep_346.ckpt"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_super_big_mbr_ep_346.ckpt"
+sha256 = "26dda242bce4405555f2d6086d079fe8cc23f1f04e02e501d2689bfe3ece0489"
+size = 455864012
+
+[[models.roformer-model-melband-roformer-de-reverb-super-big-by-sucial.artifacts]]
+kind = "config"
+name = "config_dereverb_echo_mel_band_roformer_v2.yaml"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_echo_mel_band_roformer_v2.yaml"
+sha256 = "b801c49dbc09372f85281127adde7ded28f475d98e9940efba4a2f45202b38f2"
+size = 1105
+
+[models.roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial]
+model = "roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial"
+license = "not-reviewed"
+provenance = "nomadkaraoke/python-audio-separator model-configs GitHub release; strict-load and short-forward probed 2026-07-23"
+source_revision = "2026-07-23"
+updated_at = "2026-07-23"
+
+[[models.roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial.artifacts]]
+kind = "checkpoint"
+name = "dereverb_echo_mbr_fused.ckpt"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_echo_mbr_fused.ckpt"
+sha256 = "1596b1063238f487d54a0510a8c92cb28c000c803a271dd618ac49efc99ef3f7"
+size = 455776577
+
+[[models.roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial.artifacts]]
+kind = "config"
+name = "config_dereverb_echo_mel_band_roformer_v2.yaml"
+url = "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/config_dereverb_echo_mel_band_roformer_v2.yaml"
+sha256 = "b801c49dbc09372f85281127adde7ded28f475d98e9940efba4a2f45202b38f2"
+size = 1105

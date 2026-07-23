@@ -176,6 +176,12 @@ bs-roformer-infer reached in its own 0.1.2 release.
   declarations: pcunwa Big Beta 7 and Inst V2, becruily vocals/instrumental/
   deux/karaoke/guitar, anvuew de-reverb main/less-aggressive/mono, and Sucial
   aspiration main/less-aggressive plus de-reverb-echo v1/v2.
+- Added six more strict-load and short-forward-probed MelBand-RoFormer
+  checkpoint declarations from nomadkaraoke/python-audio-separator's
+  `model-configs` release: Mel-RoFormer Viperx 1143, Kim InstVoc Duality
+  V1/V2, Sucial De-Reverb Big/Super Big, and Sucial De-Reverb-Echo Fused.
+  The probed De-Reverb-Echo V2 release asset was skipped as a renamed duplicate
+  of the already-registered Sucial V2 checkpoint by sha256.
 - Fixed MelBand multi-output inference to write only the config-declared stems,
   while single-target models still derive the configured residual stem.
 - Repaired the session lifecycle: `load()` is idempotent, `release()` is

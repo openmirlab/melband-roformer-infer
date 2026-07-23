@@ -96,6 +96,12 @@ class TestDirectProbedCheckpointMetadata:
             "roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial",
             "roformer-model-melband-roformer-de-reverb-echo-by-sucial",
             "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial",
+            "roformer-model-mel-roformer-viperx-1143",
+            "roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa",
+            "roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa",
+            "roformer-model-melband-roformer-de-reverb-big-by-sucial",
+            "roformer-model-melband-roformer-de-reverb-super-big-by-sucial",
+            "roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial",
             "melband-roformer-big-beta7",
             "roformer-model-melband-roformer-kim-inst-v2-by-unwa",
         }
@@ -123,6 +129,30 @@ class TestDirectProbedCheckpointMetadata:
             "roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial": (
                 "dereverb_echo_mbr_v2_sdr_dry_13.4843.ckpt",
                 "config_dereverb_echo_mbr_v2.yaml",
+            ),
+            "roformer-model-mel-roformer-viperx-1143": (
+                "model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt",
+                "model_mel_band_roformer_ep_3005_sdr_11.4360.yaml",
+            ),
+            "roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa": (
+                "melband_roformer_instvoc_duality_v1.ckpt",
+                "config_melbandroformer_instvoc_duality.yaml",
+            ),
+            "roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa": (
+                "melband_roformer_instvox_duality_v2.ckpt",
+                "config_melbandroformer_instvoc_duality.yaml",
+            ),
+            "roformer-model-melband-roformer-de-reverb-big-by-sucial": (
+                "dereverb_big_mbr_ep_362.ckpt",
+                "config_dereverb_echo_mel_band_roformer_v2.yaml",
+            ),
+            "roformer-model-melband-roformer-de-reverb-super-big-by-sucial": (
+                "dereverb_super_big_mbr_ep_346.ckpt",
+                "config_dereverb_echo_mel_band_roformer_v2.yaml",
+            ),
+            "roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial": (
+                "dereverb_echo_mbr_fused.ckpt",
+                "config_dereverb_echo_mel_band_roformer_v2.yaml",
             ),
             "melband-roformer-big-beta7": (
                 "big_beta7.ckpt",

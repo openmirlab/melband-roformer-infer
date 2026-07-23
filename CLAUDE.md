@@ -58,30 +58,30 @@ Bundle").
   down to `MelBandRoformer`'s actual constructor params and restores the
   tuple-typed ones yaml flattens to lists).
 - `src/mel_band_roformer/data/melband_models.json` -- the model registry
-  data (89 entries).
+  data (99 entries).
 - `src/mel_band_roformer/data/overrides.json` -- the live patch point for
   dead URLs: when a host 404s, edit this file first, before touching
   `download.py`.
 - `src/mel_band_roformer/data/checksums.json` -- recorded sha256 + size for
-  the 71 assets whose download URLs were live in the 2026-07-12 audit (53
-  checkpoints + 18 configs); assets without a recorded hash fall back to a
+  94 known-live assets; assets without a recorded hash fall back to a
   non-empty-size check and print a warning saying so.
 - `tools/check_weights_liveness.py` -- HEADs every registry URL; needs
   network, not run in default CI (see Testing below).
 
 ## Weights hosting (org constitution article 4)
 
-All 89 registry models download from third-party hosts at runtime; none are
+All 99 registry models download from third-party hosts at runtime; none are
 committed to this repo. This registry was bulk-imported from
 python-audio-separator's `models.json`, which shares checkpoint/config
 filenames but not necessarily a live download URL for each entry -- a
 2026-07-12 audit found most of the ~68 bulk-imported (non-overridden)
-entries had never been wired to a real URL. As of that audit: **37 of 89
-models are fully usable** (checkpoint and config both live, both with
-recorded sha256), 36 checkpoints are dead, and 10 models are fully dead
-(both checkpoint and config unreachable) -- unchanged from the prior
-0.1.2 audit; two HF-hosted overrides (`inst_gaboxFv8.ckpt`,
-`inst_gaboxFv8B.ckpt`) were newly confirmed dead in this pass.
+entries had never been wired to a real URL. After the 2026-07-23 scout:
+**57 of 99 models are known fully usable** (checkpoint and config both live,
+both with recorded sha256). The older 2026-07-12 audit also records dead or
+partially dead legacy entries; those remain in the registry for compatibility
+but are not declared in package-owned known-good checkpoint metadata. Two
+HF-hosted overrides (`inst_gaboxFv8.ckpt`, `inst_gaboxFv8B.ckpt`) were newly
+confirmed dead in the earlier 2026-07-12 pass.
 
 The recommended default (`melband-roformer-kim-vocals`, Kimberley Jensen's
 original model) is unaffected -- its checkpoint and config are both live and
@@ -95,6 +95,11 @@ The 2026-07-23 scout added fourteen strict-load and short-forward-probed MelBand
 models to `config/checkpoints.toml`: pcunwa Big Beta 7 and Inst V2, becruily
 vocals/instrumental/deux/karaoke/guitar, anvuew de-reverb main/less-aggressive/
 mono, and Sucial aspiration main/less-aggressive plus de-reverb-echo v1/v2.
+The follow-up MelBand scout added six more strict-load and short-forward-probed
+entries from nomadkaraoke/python-audio-separator's model-configs release:
+Mel-RoFormer Viperx 1143, InstVoc Duality V1/V2, De-Reverb Big/Super Big, and
+De-Reverb-Echo Fused. The probed De-Reverb-Echo V2 release asset was skipped
+because its checkpoint hash already matches the existing Sucial V2 entry.
 The inference output contract now
 uses the config-declared stems for multi-output models and derives a residual
 only for single-target models.

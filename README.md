@@ -24,9 +24,9 @@ through [python-audio-separator](https://github.com/nomadkaraoke/python-audio-se
 (which pulls in the full Ultimate Vocal Remover GUI stack) or through
 individual community members' personal Hugging Face accounts -- hosts that
 can and do vanish or get renamed without warning (see the jarredou account
-deletion and the broader 2026-07 registry audit in `CHANGELOG.md`: 37 of the
-89 bulk-imported registry entries are currently fully usable, 36 checkpoints
-are dead, and 10 models are fully dead).
+deletion and the broader 2026-07 registry audit in `CHANGELOG.md`: 57 of the
+99 registry entries are currently known fully usable; the older legacy audit
+also records dead or partially dead third-party entries).
 
 MelBand-RoFormer-Infer reprovides the architecture as a clean,
 pip-installable, inference-only package: no training code, no GUI
@@ -69,14 +69,14 @@ Also available as a preprint: [arXiv:2309.02612](https://arxiv.org/abs/2309.0261
 
 - **Inference Only**: Lightweight package focused on production inference
 - **Auto-Download**: the default model is fetched on first use and sha256-verified against recorded checksums
-- **Model Registry**: 89 catalogued models -- vocals, instrumentals, karaoke, denoise, dereverb, and more (see the availability note below)
+- **Model Registry**: 99 catalogued models -- vocals, instrumentals, karaoke, denoise, dereverb, and more (see the availability note below)
 - **CLI Tools**: `melband-roformer-infer` and `melband-roformer-download` commands
 - **Python API**: Clean programmatic interface
 
 ## Scope
 
 **In scope**: inference (forward pass) with the Mel-Band RoFormer
-architecture; an 89-model registry (`src/mel_band_roformer/data/melband_models.json`)
+architecture; a 99-model registry (`src/mel_band_roformer/data/melband_models.json`)
 spanning vocals, instrumental, karaoke, denoise, dereverb, crowd, general,
 and aspiration checkpoints; automatic, manual, and configurable-directory
 checkpoint management with sha256 verification; a standalone download CLI.
@@ -147,6 +147,8 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 | `roformer-model-melband-roformer-instrumental-by-becruily` | instrumental | Instrumental by becruily |
 | `roformer-model-melband-roformer-kim-inst-v2-by-unwa` | instrumental | Inst V2 by unwa |
 | `roformer-model-melband-roformer-deux-by-becruily` | instvoc | Vocals/Instrumental by becruily |
+| `roformer-model-melband-roformer-kim-instvoc-duality-v1-by-unwa` | instvoc | InstVoc Duality V1 by Unwa |
+| `roformer-model-melband-roformer-kim-instvoc-duality-v2-by-unwa` | instvoc | InstVoc Duality V2 by Unwa |
 | `roformer-model-melband-roformer-instrumental-by-gabox` | instrumental | Instrumental by Gabox |
 | `roformer-model-melband-roformer-karaoke-by-becruily` | karaoke | Karaoke by becruily |
 | `roformer-model-melband-roformer-guitar-by-becruily` | guitar | Guitar by becruily |
@@ -158,17 +160,23 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 | `roformer-model-melband-roformer-aspiration-less-aggressive-by-sucial` | aspiration | Aspiration Less Aggressive by Sucial |
 | `roformer-model-melband-roformer-de-reverb-echo-by-sucial` | dereverb | De-Reverb-Echo by Sucial |
 | `roformer-model-melband-roformer-de-reverb-echo-v2-by-sucial` | dereverb | De-Reverb-Echo V2 by Sucial |
-| ... | ... | See `--list-models` for 93 models |
+| `roformer-model-melband-roformer-de-reverb-big-by-sucial` | dereverb | De-Reverb Big by Sucial |
+| `roformer-model-melband-roformer-de-reverb-super-big-by-sucial` | dereverb | De-Reverb Super Big by Sucial |
+| `roformer-model-melband-roformer-de-reverb-echo-fused-by-sucial` | dereverb | De-Reverb-Echo Fused by Sucial |
+| `roformer-model-mel-roformer-viperx-1143` | vocals | Mel-RoFormer Viperx 1143 |
+| ... | ... | See `--list-models` for 99 models |
 
 **Categories**: vocals, instrumental, instvoc, karaoke, guitar, denoise, dereverb, crowd, general, aspiration
 
-> **Note on download availability** (re-audited 2026-07-12): this registry is
+> **Note on download availability** (re-audited 2026-07-23): this registry is
 > bulk-imported from several third-party contributors' Hugging Face repos, some
 > of which get renamed or taken down without notice (see `CHANGELOG.md` for the
 > 2026-07 audit and the jarredou account deletion). As of the latest audit,
-> **37 of the 89 registry models are fully usable** (checkpoint and config both
-> live -- all of these carry recorded sha256 checksums); 36 checkpoints are
-> dead, and 10 models are fully dead (both checkpoint and config unreachable).
+> **57 of the 99 registry models are known fully usable** (checkpoint and config both
+> live -- all of these carry recorded sha256 checksums). The older legacy audit
+> also records dead or partially dead third-party entries; those remain in the
+> registry for compatibility but are not declared as known-good checkpoint
+> metadata.
 > Run `python tools/check_weights_liveness.py` (needs network access) to
 > re-check which models currently have a live download URL before relying on
 > one in a pipeline; `--model`/`--category` downloads will print a clear error
@@ -223,7 +231,7 @@ When `melband-roformer-infer` runs without `--model_path`/`--config_path`, the
 requested registry model (default: MelBand Roformer Kim) is looked up in the
 directories above and downloaded on first use. Downloads are verified against
 the sha256 checksums recorded in `src/mel_band_roformer/data/checksums.json`
-(71 assets covering every URL that was live in the 2026-07-12 audit); a
+(94 assets covering every URL that was live in the latest 2026-07 audit); a
 mismatch deletes the file and retries instead of keeping a corrupt checkpoint.
 Assets without a recorded hash (only reachable via unaudited fallback URLs)
 print a warning and fall back to a basic size check.
