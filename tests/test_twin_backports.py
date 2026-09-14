@@ -83,11 +83,7 @@ class TestTargetInstrumentFallback:
             channels, length = mixture.shape
             return {"vocals": np.zeros((channels, length), dtype=np.float32)}, None
 
-        # demix_track is called from the Torch backend, which is the one place
-        # the chunked inference now lives -- patch it there, not at a re-export.
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", fake_demix_track)
+        monkeypatch.setattr(inference_module, "demix_track", fake_demix_track)
 
         args = argparse.Namespace(input_folder=str(input_dir), store_dir=str(store_dir))
 
@@ -114,11 +110,7 @@ class TestInstrumentsGuard:
         def fake_demix_track(config, model, mixture, device, first_chunk_time=None):
             return {}, None
 
-        # demix_track is called from the Torch backend, which is the one place
-        # the chunked inference now lives -- patch it there, not at a re-export.
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", fake_demix_track)
+        monkeypatch.setattr(inference_module, "demix_track", fake_demix_track)
 
         args = argparse.Namespace(input_folder=str(input_dir), store_dir=str(store_dir))
 

@@ -4,15 +4,11 @@ This module gives Python callers a package-owned session/separator API on top of
 the CLI-oriented inference flow: load once, infer many times, then release GPU
 memory explicitly. Session inference now returns the exact files run_folder()
 wrote, so callers do not have to reconstruct output paths from conventions.
-`backend=` (added alongside `device=`) selects the compute framework -- 'torch'
-(default), 'mlx', or 'auto' -- resolved before any checkpoint is downloaded or
-verified so an unavailable backend fails fast rather than after expensive work.
 
 Reads: .checkpoints (checkpoint_metadata), .download (ensure_model_assets,
-get_file_hash), .inference (SafeLoaderWithTuple, separate_folder_with,
-_resolve_device, _select_mlx_device), .backends (get_backend,
-resolve_backend_name), .utils (get_model_from_config, load_checkpoint_state),
-yaml, ml_collections, torch
+get_file_hash), .inference (SafeLoaderWithTuple, run_folder, _resolve_device),
+.utils (get_model_from_config, load_checkpoint_state), yaml, ml_collections,
+torch
 """
 
 from __future__ import annotations
@@ -40,7 +36,6 @@ class MelBandRoformerSession:
         config: ConfigDict | None = None,
         models_dir: str | Path | None = None,
         device: Any = None,
-        backend: str | None = None,
         progress: bool = True,
         checkpoint_url: str | None = None,
         checkpoint_sha256: str | None = None,
@@ -51,8 +46,6 @@ class MelBandRoformerSession:
         self.config_path = Path(config_path) if config_path else None
         self.models_dir = models_dir
         self.device = device
-        self.backend = backend
-        self._backend = None
         self.progress = progress
         self.checkpoint_url = checkpoint_url
         self.checkpoint_sha256 = checkpoint_sha256
@@ -76,17 +69,6 @@ class MelBandRoformerSession:
             raise RuntimeError("cannot load a closed MelBandRoformerSession")
         self._status = "loading"
         try:
-            from .backends import get_backend, resolve_backend_name
-
-            # Resolve the backend before any expensive work: an unavailable one
-            # must fail here, not after a checkpoint has been downloaded and
-            # verified. The registry variation is read first so `auto` can skip
-            # a backend that has no head for this checkpoint instead of failing
-            # at construction.
-            self.backend = resolve_backend_name(
-                self.backend, variation=self._metadata().get("variation")
-            )
-
             from .download import ensure_model_assets
             from .inference import SafeLoaderWithTuple
 
@@ -101,20 +83,7 @@ class MelBandRoformerSession:
             with self.config_path.open() as handle:
                 self._config = ConfigDict(yaml.load(handle, Loader=SafeLoaderWithTuple))
 
-            if self.backend == "torch":
-                self._load_torch()
-            else:
-                self._verify_checkpoint_hash()
-                from .inference import _select_mlx_device
-
-                self._backend = get_backend(self.backend).from_checkpoint(
-                    config=self._config,
-                    checkpoint_path=self.model_path,
-                    variation=self._metadata().get("variation"),
-                    device=_select_mlx_device(self.device),
-                )
-                self._model = self._backend.model
-                self.device = self._backend.resolved_device
+            self._load_torch()
             self._status = "ready"
             return self
         except Exception:
@@ -135,7 +104,6 @@ class MelBandRoformerSession:
 
     def _load_torch(self) -> None:
         """The shipped Torch construction path, preserved step for step."""
-        from .backends import get_backend
         from .inference import _resolve_device
         from .utils import get_model_from_config, load_checkpoint_state
 
@@ -145,7 +113,6 @@ class MelBandRoformerSession:
         target = _resolve_device(self.device)
         self._model = self._model.to(target).eval()
         self.device = target
-        self._backend = get_backend("torch")(self._model, self._config, target)
 
     def infer(
         self,
@@ -159,47 +126,30 @@ class MelBandRoformerSession:
             raise RuntimeError(
                 "MelBandRoformerSession must be ready; call load() before infer()"
             )
-        from .inference import separate_folder_with
         from argparse import Namespace
 
-        return separate_folder_with(
-            self._ensure_backend().separate,
+        from .inference import run_folder
+
+        return run_folder(
+            self._model,
             Namespace(input_folder=Path(input_folder), store_dir=Path(store_dir)),
             self._config,
+            self.device,
             verbose=verbose,
             output_format=output_format,
         )
 
-    def _ensure_backend(self):
-        """The backend, built on demand for sessions handed a model directly."""
-        if self._backend is None:
-            from .backends import get_backend, resolve_backend_name
-
-            self.backend = resolve_backend_name(self.backend)
-            self._backend = get_backend(self.backend)(self._model, self._config, self.device)
-        return self._backend
-
     def release(self) -> MelBandRoformerSession:
         if self._status == "closed":
             return self
-        if self._backend is not None:
-            # The backend already owns .cpu()'ing its own model reference (the
-            # same object as self._model) -- calling it again here would be a
-            # second, redundant .cpu() call on an already-released model.
-            self._backend.release()
-            self._backend = None
-        elif self._model is not None and hasattr(self._model, "cpu"):
+        if self._model is not None and hasattr(self._model, "cpu"):
             self._model.cpu()
         self._model = None
         try:
             import torch
 
-            from .inference import mps_available
-
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-            if mps_available():
-                torch.mps.empty_cache()
         except ImportError:
             pass
         self._status = "released"
@@ -226,7 +176,6 @@ class MelBandRoformerSession:
         return {
             "model": self.model_name,
             "status": self._status,
-            "backend": self.backend,
             "device": str(self.device) if self.device is not None else None,
             "model_loaded": self._model is not None,
             "models_dir": str(self.models_dir) if self.models_dir else None,
@@ -290,7 +239,6 @@ def separate_folder(input_folder, **kwargs):
             "config_path",
             "models_dir",
             "device",
-            "backend",
             "progress",
             "checkpoint_url",
             "checkpoint_sha256",

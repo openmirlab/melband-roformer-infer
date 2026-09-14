@@ -9,13 +9,12 @@ the type hints require -- yaml always produces a list, never a tuple. demix_trac
 splits long mixtures into overlapping chunks, applies a linear fade-in/out window per
 chunk to avoid audible seams at chunk boundaries, and normalizes the result by the
 accumulated window weight -- this is what lets inference run on audio far longer than
-a single forward pass could hold in memory. Its chunk/step/fade/border numbers come
-from backends.ChunkingPlan rather than being computed here a second time, so the
-Torch and MLX backends cannot derive them independently and drift silently -- see
-backends/base.py's docstring. load_checkpoint_state centralizes checkpoint loading
-(both backends and the CLI use it) so a future compatibility tweak has one home.
+a single forward pass could hold in memory. Its chunk_size lookup falls back from the
+`inference` config section to the `audio` section, since some config schema variants
+only declare it there. load_checkpoint_state centralizes checkpoint loading (both
+inference.py and clean_api.py use it) so a future compatibility tweak has one home.
 
-Reads: .mel_band_roformer.MelBandRoformer, .backends (ChunkingPlan), torch
+Reads: .mel_band_roformer.MelBandRoformer, torch
 """
 
 import time
@@ -74,15 +73,17 @@ def get_windowing_array(window_size, fade_size, device):
     return window.to(device)
 
 def demix_track(config, model, mix, device, first_chunk_time=None):
-    # ChunkingPlan owns these numbers so a second backend cannot derive them
-    # independently and drift silently -- see backends/base.py.
-    from .backends import ChunkingPlan
-
-    plan = ChunkingPlan.from_config(config)
-    C = plan.chunk_size
-    step = plan.step
-    fade_size = plan.fade_size
-    border = plan.border
+    # chunk_size can be in inference or audio section depending on config version
+    if hasattr(config.inference, 'chunk_size'):
+        C = config.inference.chunk_size
+    elif hasattr(config, 'audio') and hasattr(config.audio, 'chunk_size'):
+        C = config.audio.chunk_size
+    else:
+        C = 588800  # default chunk size
+    N = config.inference.num_overlap
+    step = C // N
+    fade_size = C // 10
+    border = C - step
 
     if mix.shape[1] > 2 * border and border > 0:
         mix = nn.functional.pad(mix, (border, border), mode='reflect')

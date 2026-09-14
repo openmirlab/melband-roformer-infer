@@ -5,11 +5,10 @@
 (backing `model_registry.py`'s 99-entry `MODEL_REGISTRY`, this package's original and
 still-primary registry): every model here is cross-referenced by slug against that
 JSON registry and additionally carries per-artifact sha256 digests and provenance,
-which the JSON registry does not. Callers (`download.py`, `inference.py`,
-`clean_api.py`) look a model up here for stricter metadata when present and fall
-back to JSON-only handling otherwise (see `inference.py`'s `_safe_checkpoint_metadata`,
-which is deliberately tolerant of models outside this TOML registry) -- this module
-does not replace the JSON registry, and being absent here is not itself an error.
+which the JSON registry does not. Callers (`download.py`, `clean_api.py`) look a
+model up here for stricter metadata when present and fall back to JSON-only
+handling otherwise -- this module does not replace the JSON registry, and being
+absent here is not itself an error.
 `load_checkpoints` validates the TOML eagerly and raises `ValueError` for any schema
 violation: missing/wrong schema version, a malformed `models` table, a model missing
 its `artifacts` list, or an artifact with a missing/malformed URL or SHA-256.

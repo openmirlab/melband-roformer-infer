@@ -5,13 +5,11 @@ registry model (default: the recommended Kim vocals model) is looked up in the
 models dir ($MELBAND_ROFORMER_MODELS_PATH > ~/.cache/melband-roformer-infer >
 legacy ./models) and downloaded sha256-verified on first use via
 download.ensure_model_assets -- explicit paths always win and skip all of that.
-separate_folder_with() owns everything backend-agnostic (folder iteration, stem
-naming, instrumental derivation, the manifest) so no backend can drift on any of
-it; run_folder() keeps its exact signature and is the Torch entry into it -- it
-also returns the JSON-serializable manifest of the files it actually wrote, so
-Python callers can consume exact output paths without guessing from model
-defaults or filename conventions, while the CLI keeps its prior behavior by
-ignoring that return value.
+run_folder() owns folder iteration, stem naming, instrumental derivation, and the
+chunked Torch inference itself (via utils.demix_track) in one place, and returns
+the JSON-serializable manifest of the files it actually wrote, so Python callers
+can consume exact output paths without guessing from model defaults or filename
+conventions, while the CLI keeps its prior behavior by ignoring that return value.
 Training configs sometimes embed `!!python/tuple` YAML tags; SafeLoaderWithTuple
 downgrades those to plain lists so `yaml.load` never has to execute an arbitrary
 Python-object constructor, and utils.get_model_from_config converts the needed
@@ -20,15 +18,15 @@ params back to tuples afterward. `_resolve_device`/`_select_device` resolve
 `cuda`, `cuda:N`, and `mps`, raising on an explicitly requested accelerator that
 is unavailable rather than silently downgrading it.
 
-Reads: .backends (resolve_backend_name, get_backend), .backends.torch_backend
-(TorchBackend), .utils (get_model_from_config, load_checkpoint_state),
-.download (ensure_model_assets), .checkpoints (checkpoint_metadata),
-.model_registry (DEFAULT_MODEL), yaml, ml_collections, torch
+Reads: .utils (demix_track, get_model_from_config, load_checkpoint_state),
+.download (ensure_model_assets), .model_registry (DEFAULT_MODEL), yaml,
+ml_collections, torch
 """
 
 from __future__ import annotations
 
 import argparse
+import sys
 import time
 from pathlib import Path
 from typing import Iterable, TypedDict
@@ -41,10 +39,9 @@ import yaml
 from ml_collections import ConfigDict
 from tqdm import tqdm
 
-from .checkpoints import checkpoint_metadata
 from .download import ensure_model_assets
 from .model_registry import DEFAULT_MODEL
-from .utils import get_model_from_config, load_checkpoint_state
+from .utils import demix_track, get_model_from_config, load_checkpoint_state
 
 
 class SafeLoaderWithTuple(yaml.SafeLoader):
@@ -162,34 +159,18 @@ def _record_written_output(
 def run_folder(
     model, args, config, device, verbose: bool = False, output_format: str = "wav_float32"
 ) -> OutputManifest:
-    """Torch entry point: separate every WAV in a folder. Signature unchanged.
+    """Separate every WAV in a folder with the shipped Torch model. Signature unchanged.
 
-    Delegates the Torch-specific work to TorchBackend and the backend-agnostic
-    work -- folder iteration, stem naming, instrumental derivation, the manifest --
-    to separate_folder_with(), so any backend drives the identical output logic.
-    """
-    from .backends.torch_backend import TorchBackend
-
-    model.eval()
-    backend = TorchBackend(model, config, device)
-    return separate_folder_with(
-        backend.separate, args, config, verbose=verbose, output_format=output_format
-    )
-
-
-def separate_folder_with(
-    separate, args, config, verbose: bool = False, output_format: str = "wav_float32"
-) -> OutputManifest:
-    """Backend-agnostic folder run: read, delegate one mixture, write, manifest.
-
-    `separate` receives a `(channels, samples)` float32 array and returns a mapping
-    of stem id to an array of the same shape. Everything a stem's filename, the
-    derived residual stem, and the returned manifest depend on is decided here,
-    once, so no backend can drift on any of it. `output_format` controls the
+    Owns folder iteration, stem naming, instrumental derivation, the manifest, and
+    the chunked Torch inference itself (via utils.demix_track) in one place --
+    everything a stem's filename, the derived residual stem, and the returned
+    manifest depend on is decided here, once. `output_format` controls the
     written suffix/subtype via `_OUTPUT_FORMAT_SPECS`.
     """
     start_time = time.time()
     suffix, subtype = _resolve_output_format(output_format)
+
+    model.eval()
 
     input_folder = Path(args.input_folder).expanduser()
     store_dir = _resolve_output_dir(Path(args.store_dir).expanduser())
@@ -201,6 +182,7 @@ def separate_folder_with(
 
     iterable = _format_iterable(all_mixtures_path, verbose)
     manifest: OutputManifest = []
+    first_chunk_time = None
 
     for track_number, path in enumerate(iterable, 1):
         print(f"\nProcessing track {track_number}/{total_tracks}: {path.name}")
@@ -211,7 +193,18 @@ def separate_folder_with(
             original_mono = True
             mix = np.stack([mix, mix], axis=-1)
 
-        res = separate(mix.T)
+        mixture = torch.tensor(mix.T, dtype=torch.float32)
+
+        if first_chunk_time is not None:
+            total_length = mixture.shape[1]
+            step = config.inference.chunk_size // config.inference.num_overlap
+            num_chunks = (total_length + step - 1) // step
+            estimated_total_time = first_chunk_time * num_chunks
+            print(f"Estimated total processing time for this track: {estimated_total_time:.2f} seconds")
+            sys.stdout.write(f"Estimated time remaining: {estimated_total_time:.2f} seconds\r")
+            sys.stdout.flush()
+
+        res, first_chunk_time = demix_track(config, model, mixture, device, first_chunk_time)
 
         for instr in instruments:
             vocals_output = res[instr].T
@@ -267,8 +260,6 @@ def proc_folder(args):
     parser.add_argument("--input_folder", type=Path, required=True, help="folder with songs to process")
     parser.add_argument("--store_dir", type=Path, default=Path("outputs"), help="path to store model outputs")
     parser.add_argument("--device", type=str, default=None, help="torch device string, defaults to auto")
-    parser.add_argument("--backend", type=str, default=None,
-                        help="compute backend: 'torch' (default), 'mlx', or 'auto'")
     parser.add_argument("--device_ids", nargs='+', type=int, help='optional list of gpu ids for DataParallel')
     if args is None:
         args = parser.parse_args()
@@ -278,53 +269,27 @@ def proc_folder(args):
     else:
         args = parser.parse_args(args)
 
-    from .backends import get_backend, resolve_backend_name
-
-    # Availability first, so an unavailable backend fails before a checkpoint is
-    # downloaded and verified rather than after.
-    resolve_backend_name(getattr(args, "backend", None))
-
     _resolve_model_assets(args, parser)
-
-    # Resolve for real now that the checkpoint's variation is known: `auto` must
-    # be able to skip a backend that has no head for this model.
-    backend_name = resolve_backend_name(
-        getattr(args, "backend", None), variation=getattr(args, "model_variation", None)
-    )
 
     torch.backends.cudnn.benchmark = True
 
     with open(args.config_path) as f:
         config = ConfigDict(yaml.load(f, Loader=SafeLoaderWithTuple))
 
-    if backend_name == "torch":
-        model = get_model_from_config(args.model_type, config)
-        print(f"Using model weights: {args.model_path}")
-        model.load_state_dict(load_checkpoint_state(args.model_path, map_location=torch.device("cpu")))
+    model = get_model_from_config(args.model_type, config)
+    print(f"Using model weights: {args.model_path}")
+    model.load_state_dict(load_checkpoint_state(args.model_path, map_location=torch.device("cpu")))
 
-        device = _select_device(args)
+    device = _select_device(args)
 
-        if args.device_ids:
-            if not torch.cuda.is_available():
-                raise RuntimeError("CUDA is required for --device_ids usage")
-            model = nn.DataParallel(model, device_ids=args.device_ids).to(device)
-        else:
-            model = model.to(device)
-
-        backend = get_backend(backend_name)(model, config, device)
+    if args.device_ids:
+        if not torch.cuda.is_available():
+            raise RuntimeError("CUDA is required for --device_ids usage")
+        model = nn.DataParallel(model, device_ids=args.device_ids).to(device)
     else:
-        # MLX builds and converts its own model straight from the checkpoint --
-        # it never touches get_model_from_config/DataParallel/.to(device), which
-        # are Torch-specific.
-        print(f"Using model weights: {args.model_path}")
-        backend = get_backend(backend_name).from_checkpoint(
-            config=config,
-            checkpoint_path=args.model_path,
-            variation=getattr(args, "model_variation", None),
-            device=_select_mlx_device(getattr(args, "device", None)),
-        )
+        model = model.to(device)
 
-    return separate_folder_with(backend.separate, args, config, verbose=False)
+    return run_folder(model, args, config, device, verbose=False)
 
 
 def _resolve_model_assets(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
@@ -338,27 +303,12 @@ def _resolve_model_assets(args: argparse.Namespace, parser: argparse.ArgumentPar
         if getattr(args, "model", None):
             parser.error("--model selects a registry model to auto-resolve; "
                          "it cannot be combined with explicit --model_path/--config_path")
-        args.model_variation = None
         return
     model_key = getattr(args, "model", None) or DEFAULT_MODEL
     args.model_path, args.config_path = ensure_model_assets(
         model_key, models_dir=getattr(args, "models_dir", None)
     )
     args.model = model_key
-    args.model_variation = _safe_checkpoint_metadata(model_key).get("variation")
-
-
-def _safe_checkpoint_metadata(model_key: str) -> dict:
-    """checkpoint_metadata(), but tolerant of models outside the TOML registry.
-
-    Most of this package's 99-model legacy JSON registry (model_registry.py)
-    predates config/checkpoints.toml's smaller, sha256-verified 21-model set, so
-    a valid --model key here can still miss the TOML lookup.
-    """
-    try:
-        return checkpoint_metadata(model_key)
-    except KeyError:
-        return {}
 
 
 def _resolve_device(device: str | torch.device | None) -> torch.device:
@@ -388,29 +338,6 @@ def _resolve_device(device: str | torch.device | None) -> torch.device:
 
 def _select_device(args: argparse.Namespace) -> torch.device:
     return _resolve_device(args.device)
-
-
-def mps_available() -> bool:
-    """True when this torch build exposes a usable Apple Silicon MPS backend."""
-    backend = getattr(torch.backends, "mps", None)
-    return bool(backend is not None and backend.is_available())
-
-
-def _select_mlx_device(device) -> str:
-    """Validate a device request against the MLX backend's resolution table.
-
-    Per the org's `backend` x `device` contract (bs-roformer-infer's
-    brain/architecture.md, reused verbatim here): `backend="mlx"` owns its own
-    execution target and accepts only `None`, `"auto"`, or `"mps"` -- an explicit
-    Torch device string it cannot honour (e.g. `"cuda"`) is refused rather than
-    silently reinterpreted.
-    """
-    if device is None or device in ("", "auto", "mps"):
-        return "mps"
-    raise ValueError(
-        f"backend='mlx' only accepts device None, 'auto', or 'mps'; got {device!r} "
-        f"-- device keeps its Torch meaning and is not overloaded to select MLX"
-    )
 
 
 def main():

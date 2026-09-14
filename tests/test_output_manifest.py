@@ -73,11 +73,7 @@ class TestRunFolderManifest:
         track_path = input_dir / "track.wav"
         _write_short_wav(track_path)
 
-        # demix_track is called from the Torch backend, which is the one place
-        # the chunked inference now lives -- patch it there, not at a re-export.
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", _fake_demix_track)
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_track)
 
         manifest = inference_module.run_folder(
             _NoOpModel(),
@@ -111,11 +107,7 @@ class TestRunFolderManifest:
         _write_short_wav(alpha_path)
         _write_short_wav(beta_path)
 
-        # demix_track is called from the Torch backend, which is the one place
-        # the chunked inference now lives -- patch it there, not at a re-export.
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", _fake_demix_track)
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_track)
 
         manifest = inference_module.run_folder(
             _NoOpModel(),
@@ -156,9 +148,7 @@ class TestRunFolderManifest:
             }
         )
 
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", _fake_demix_from_config)
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_from_config)
 
         manifest = inference_module.run_folder(
             _NoOpModel(),
@@ -190,9 +180,7 @@ class TestRunFolderManifest:
             }
         )
 
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", _fake_demix_from_config)
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_from_config)
 
         manifest = inference_module.run_folder(
             _NoOpModel(),
@@ -214,11 +202,7 @@ class TestRunFolderManifest:
         track_path = input_dir / "track.wav"
         _write_short_wav(track_path)
 
-        # demix_track is called from the Torch backend, which is the one place
-        # the chunked inference now lives -- patch it there, not at a re-export.
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", _fake_demix_track)
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_track)
 
         manifest = inference_module.run_folder(
             _NoOpModel(),
@@ -247,9 +231,7 @@ class TestRunFolderManifest:
         track_path = input_dir / "track.wav"
         _write_short_wav(track_path)
 
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
-        monkeypatch.setattr(torch_backend_module, "demix_track", _fake_demix_track)
+        monkeypatch.setattr(inference_module, "demix_track", _fake_demix_track)
 
         manifest = inference_module.run_folder(
             _NoOpModel(),
@@ -273,10 +255,8 @@ class TestRunFolderManifest:
         track_path = input_dir / "track.wav"
         _write_short_wav(track_path)
 
-        from mel_band_roformer.backends import torch_backend as torch_backend_module
-
         monkeypatch.setattr(
-            torch_backend_module, "demix_track", lambda *a, **k: pytest.fail("must not run")
+            inference_module, "demix_track", lambda *a, **k: pytest.fail("must not run")
         )
 
         with pytest.raises(ValueError, match="unsupported output_format"):
@@ -301,20 +281,20 @@ class TestSessionManifest:
         ]
         captured = {}
 
-        # The session drives the backend-agnostic folder run, handing it the
-        # resolved backend's separate() -- so that is the seam this asserts
-        # against, not run_folder (which is now the Torch-only entry point).
-        def fake_separate_folder_with(
-            separate, args, config, verbose=False, output_format="wav_float32"
+        # session.infer() drives run_folder() directly with its resident model --
+        # that is the seam this asserts against.
+        def fake_run_folder(
+            model, args, config, device, verbose=False, output_format="wav_float32"
         ):
-            assert callable(separate)
+            captured["model"] = model
             captured["args"] = args
             captured["config"] = config
+            captured["device"] = device
             captured["verbose"] = verbose
             captured["output_format"] = output_format
             return expected_manifest
 
-        monkeypatch.setattr(inference_module, "separate_folder_with", fake_separate_folder_with)
+        monkeypatch.setattr(inference_module, "run_folder", fake_run_folder)
 
         session = MelBandRoformerSession(
             model=_NoOpModel(),
@@ -334,16 +314,14 @@ class TestSessionManifest:
     def test_session_infer_forwards_explicit_output_format(self, monkeypatch, tmp_path):
         captured = {}
 
-        # session.infer() drives separate_folder_with() directly via the resolved
-        # backend's separate() -- run_folder is the Torch-CLI-only entry point and
-        # is never on this path, so that is the seam this asserts against.
-        def fake_separate_folder_with(
-            separate, args, config, verbose=False, output_format="wav_float32"
+        # session.infer() drives run_folder() directly with its resident model.
+        def fake_run_folder(
+            model, args, config, device, verbose=False, output_format="wav_float32"
         ):
             captured["output_format"] = output_format
             return []
 
-        monkeypatch.setattr(inference_module, "separate_folder_with", fake_separate_folder_with)
+        monkeypatch.setattr(inference_module, "run_folder", fake_run_folder)
 
         session = MelBandRoformerSession(
             model=_NoOpModel(),
