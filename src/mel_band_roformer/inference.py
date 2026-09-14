@@ -15,8 +15,9 @@ downgrades those to plain lists so `yaml.load` never has to execute an arbitrary
 Python-object constructor, and utils.get_model_from_config converts the needed
 params back to tuples afterward. `_resolve_device`/`_select_device` resolve
 `None`/""/"auto" to cuda-else-cpu (legacy behaviour) and accept explicit `cpu`,
-`cuda`, `cuda:N`, and `mps`, raising on an explicitly requested accelerator that
-is unavailable rather than silently downgrading it.
+`cuda`, and `cuda:N`, raising on an explicitly requested accelerator that is
+unavailable, and on any other device string (including `mps`, which this
+package does not support), rather than silently downgrading or misinterpreting it.
 
 Reads: .utils (demix_track, get_model_from_config, load_checkpoint_state),
 .download (ensure_model_assets), .model_registry (DEFAULT_MODEL), yaml,
@@ -312,7 +313,12 @@ def _resolve_model_assets(args: argparse.Namespace, parser: argparse.ArgumentPar
 
 
 def _resolve_device(device: str | torch.device | None) -> torch.device:
-    """Resolve legacy auto selection and validate explicit device requests."""
+    """Resolve legacy auto selection and validate explicit device requests.
+
+    Supported devices are `cpu`, `cuda`, and `cuda:N` (plus `None`/""/"auto",
+    which mean cuda-else-cpu). Any other device string -- including `mps` --
+    raises `ValueError`: this package has no Apple Silicon / MPS support.
+    """
     if device is None or device == "" or device == "auto":
         if torch.cuda.is_available():
             return torch.device("cuda:0")
@@ -322,13 +328,8 @@ def _resolve_device(device: str | torch.device | None) -> torch.device:
     resolved = torch.device(device)
     if resolved.type == "cpu" and resolved.index is None:
         return resolved
-    if resolved.type == "mps" and resolved.index is None:
-        mps = getattr(torch.backends, "mps", None)
-        if mps is None or not mps.is_available():
-            raise RuntimeError("MPS was explicitly requested but is not available")
-        return resolved
     if resolved.type != "cuda":
-        raise ValueError("device must be None, 'auto', 'cpu', 'cuda', 'cuda:N', or 'mps'")
+        raise ValueError(f"device must be None, 'auto', 'cpu', 'cuda', or 'cuda:N'; got {device!r}")
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA was explicitly requested but is not available")
     if resolved.index is not None and resolved.index >= torch.cuda.device_count():

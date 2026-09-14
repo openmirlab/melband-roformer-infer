@@ -2,9 +2,12 @@
 
 _resolve_device() (mel_band_roformer.inference) is the single owner of device
 resolution: None/""/"auto" all mean cuda:0-if-available-else-cpu, anything else
-(e.g. "cpu", "cuda:0") passes through unchanged. _select_device() (CLI/argparse
-layer) and MelBandRoformerSession.load() (clean_api) both delegate to it, so
-these tests pin the contract at both call sites rather than re-deriving it.
+(e.g. "cpu", "cuda:0") passes through unchanged. This package supports only
+`cpu`/`cuda`/`cuda:N` -- any other device string, including `mps`, raises
+`ValueError` rather than being silently downgraded or reinterpreted; there is
+no Apple Silicon / MPS support. _select_device() (CLI/argparse layer) and
+MelBandRoformerSession.load() (clean_api) both delegate to it, so these tests
+pin the contract at both call sites rather than re-deriving it.
 
 Reads: mel_band_roformer.inference, mel_band_roformer.clean_api
 """
@@ -57,14 +60,18 @@ class TestResolveDevice:
         monkeypatch.setattr(torch.cuda, "device_count", lambda: 2)
         assert inference_module._resolve_device("cuda:1") == torch.device("cuda:1")
 
-    def test_unavailable_explicit_accelerators_raise(self, monkeypatch):
+    def test_unavailable_explicit_cuda_raises(self, monkeypatch):
         import torch
 
         monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
-        monkeypatch.setattr(torch.backends.mps, "is_available", lambda: False)
         with pytest.raises(RuntimeError, match="CUDA"):
             inference_module._resolve_device("cuda")
-        with pytest.raises(RuntimeError, match="MPS"):
+
+    def test_mps_is_rejected_rather_than_downgraded(self):
+        """This package has no Apple Silicon / MPS support: `device="mps"` must
+        raise a clear ValueError from the single device resolver, not silently
+        fall back to CPU or CUDA."""
+        with pytest.raises(ValueError, match="mps"):
             inference_module._resolve_device("mps")
 
     def test_invalid_cuda_index_raises(self, monkeypatch):
