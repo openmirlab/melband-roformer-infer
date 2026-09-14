@@ -49,68 +49,43 @@ Bundle").
   construction (the fallback most of the registry's ~68 bulk-imported
   entries still rely on, and many of those default-constructed URLs were
   never actually live -- see CHANGELOG.md).
-- `src/mel_band_roformer/backends/` -- the compute seam, ported from
-  bs-roformer-infer's identical seam (this package's fork sibling). `base.py`
-  holds the `SeparationBackend` protocol (one mixture in, named stems out),
-  `ChunkingPlan` (chunk/step/fade/border, owned once so a second backend
-  cannot derive them independently), and `BackendUnavailable`;
-  `torch_backend.py` wraps the shipped `demix_track` path without forking it;
-  `__init__.py` resolves a backend by name. The seam sits at a whole mixture
-  rather than a chunk on purpose: chunked overlap-add accumulates on-device,
-  and a per-chunk seam would drag every accumulator back to the host. Backend
-  modules import lazily, so `import mel_band_roformer` never pulls in an
-  optional framework -- `tests/test_backends.py` asserts that (in a
-  subprocess, so a prior in-process `mlx.core` import on a host that has it
-  installed cannot leak a false positive).
-- `src/mel_band_roformer/mlx/` -- the vendored MLX MelBand-Roformer (MIT,
-  from `ssmall256/mlx-audio-separator`, source revision recorded in
-  `model.py`'s header), imported only by `backends/mlx_backend.py`.
-  `convert.py`'s `load_converted_weights()` raises rather than loading
-  partially: upstream's `load_weights(strict=False)` silently drops
-  unmatched keys, which leaves layers at random initialisation and produces
-  confident garbage -- it caught two real bugs in this port within minutes
-  of being wired against the real checkpoint (see `model.py`'s docstring:
-  a stray trunk-level `final_norm` upstream applies that this package's own
-  torch model never trained, and an `MLP()` hidden-layer-count off-by-one
-  from copying bs-roformer-infer's vendored helper instead of matching this
-  package's own torch `MLP()` -- the two sibling packages' `MLP()` depth
-  semantics differ by one hidden layer for the same `depth` value). `model.py`
-  carries one further deliberate deviation from upstream,
-  `exact_zero_safe_rfft()` -- read its docstring before touching it; removing
-  it reintroduces silent-audio corruption (measured: max abs error on a
-  silent-tailed track went from 1.8e-07 to 4.5e-02 with the workaround
-  disabled).
 - `src/mel_band_roformer/inference.py` -- the `melband-roformer-infer` CLI:
-  folder-batch separation, chunked overlap-add, weights auto-resolve via
-  `download.py`. `separate_folder_with()` owns everything backend-agnostic
-  (folder iteration, stem naming, residual derivation, the manifest) so no
-  backend can drift on any of it; `run_folder()` keeps its signature and is
-  the Torch entry into it. Loads configs through `SafeLoaderWithTuple` so
+  folder-batch separation, chunked overlap-add (via `utils.demix_track`),
+  weights auto-resolve via `download.py`. `run_folder()` owns folder
+  iteration, stem naming, residual derivation, the manifest, and the Torch
+  inference itself in one place; it is also the entry point
+  `MelBandRoformerSession.infer()` (`clean_api.py`) calls directly with its
+  own resident model. Loads configs through `SafeLoaderWithTuple` so
   community configs' `!!python/tuple` YAML tags never reach a real object
-  constructor.
+  constructor. `_resolve_device`/`_select_device` are the single owner of
+  device resolution: CPU and CUDA only -- any other device string, including
+  `mps`, raises `ValueError` rather than being silently downgraded or
+  misinterpreted. This package has no MLX backend or Apple Silicon (MPS)
+  support (an experimental MLX backend + `backend=` argument existed
+  2026-07-31 through this removal, decided 2026-09-14; never released).
 - `src/mel_band_roformer/checkpoints.py` -- package-owned checkpoint metadata
   and validation for the strict TOML registry (`config/checkpoints.toml`, 21
   models, schema.version=1), layered on top of the legacy 99-entry
   `data/melband_models.json` that `model_registry.py` still primarily backs.
   `load_checkpoints` raises `ValueError` for a malformed schema/artifact;
   `checkpoint_metadata` raises `KeyError` for a model absent from this TOML
-  registry -- a distinct failure mode from a malformed file. `download.py`,
-  `inference.py`, and `clean_api.py` look here first for stricter metadata and
-  fall back to JSON-only handling otherwise.
+  registry -- a distinct failure mode from a malformed file. `download.py`
+  and `clean_api.py` look here first for stricter metadata and fall back to
+  JSON-only handling otherwise.
 - `src/mel_band_roformer/clean_api.py` -- `MelBandRoformerSession` /
   `MelBandRoformerSeparator`, the additive lifecycle facade: load once, infer
-  many times, then release GPU memory explicitly. Session inference returns
-  the exact files `run_folder()` wrote instead of reconstructing output paths
-  from convention. `backend=` (alongside `device=`) selects the compute
-  framework and is resolved before any checkpoint is downloaded or verified,
-  so an unavailable backend fails fast.
+  many times, then release GPU memory explicitly. Session inference calls
+  `inference.run_folder()` directly with its own resident model and returns
+  the exact files it wrote instead of reconstructing output paths from
+  convention.
 - `src/mel_band_roformer/utils.py` -- `demix_track` (chunked windowed
-  overlap-add inference, its chunk/step/fade/border numbers sourced from
-  `backends.base.ChunkingPlan` rather than computed a second time),
+  overlap-add inference; its chunk_size lookup falls back from the
+  `inference` config section to the `audio` section, since some config
+  schema variants only declare it there),
   `get_model_from_config` (filters a raw config down to `MelBandRoformer`'s
   actual constructor params and restores the tuple-typed ones yaml flattens
-  to lists), `load_checkpoint_state` (thin `torch.load` wrapper both backends
-  and the CLI share).
+  to lists), `load_checkpoint_state` (thin `torch.load` wrapper both
+  `inference.py` and `clean_api.py` share).
 - `src/mel_band_roformer/data/melband_models.json` -- the model registry
   data (115 entries).
 - `src/mel_band_roformer/data/overrides.json` -- the live patch point for
@@ -203,32 +178,15 @@ Development below). Test files:
   the session API return the exact files they wrote, rather than forcing
   callers to infer outputs from model defaults or filename conventions.
   Offline, via monkeypatched `demix_track()` and tiny temp WAVs.
-- `tests/test_backends.py` -- backend resolution, refusal semantics (unsupported
-  variation -- vacuous today since this registry declares none, but exists so a
-  future variant checkpoint fails loudly instead of mis-running -- and unaligned
-  chunking), and the assertion that `import mel_band_roformer` pulls in no
-  optional framework. Offline, hardware-independent.
-- `tests/test_mlx_parity.py` -- Torch-vs-MLX parity on the real checkpoint, end
-  to end through `MelBandRoformerSession` on real WAV files, across three
-  tails: signal, zero-padded, and near-silent. The silent cases are the point:
-  a zero-padded tail diverged by 4.5e-02 with `exact_zero_safe_rfft` disabled
-  and 1.8e-07 with it. Marked `realweights`, deselected by default, needs the
-  `[mlx]` extra. Run on an Apple Silicon Mac:
-  `pytest -m realweights tests/test_mlx_parity.py -v` (~2.5 min for all three
-  cases).
-
-**arm64 note**: `test_mlx_parity.py` skips silently under an x86_64
-interpreter (including Rosetta on Apple Silicon) -- a green realweights run
-on the wrong arch exercises no MLX code and proves nothing about that path.
-Confirm `python -c "import platform; print(platform.machine())"` says
-`arm64` before trusting it.
+- `tests/test_device_resolution.py` -- pins device resolution at both call
+  sites (`_select_device`/CLI, `MelBandRoformerSession.load()`): legacy
+  auto-selection, explicit `cpu`/`cuda`/`cuda:N` pass-through and
+  unavailable-accelerator refusal, and that `device="mps"` raises
+  `ValueError` -- this package has no Apple Silicon (MPS) or MLX support.
 
 CI (`.github/workflows/test.yml`) matrixes Python 3.10-3.13, all
-`not network and not realweights`-marked. Locally verified 2026-07-31 via
-`uv run pytest -q` on a host with the `[mlx]` extra installed: 83 passed, 1
-skipped (`test_backends.py`'s mlx-not-installed refusal check self-skips
-because mlx really is present -- 84 passed / 0 skipped on a host without it),
-200 deselected, 0 failed.
+`not network`-marked. Locally verified: `uv run pytest -q` -- 78 passed, 229
+deselected, 0 failed.
 
 ## File-top header convention
 
@@ -245,12 +203,9 @@ change.
 
 ```bash
 uv sync --extra dev      # install package + dev deps (pytest, ruff)
-uv run pytest -q         # unit tests (network- and realweights-marked tests deselected)
+uv run pytest -q         # unit tests (network-marked tests deselected)
 uv run ruff check .      # lint
 ```
 
 `pip install -e ".[dev]"` is the pip-only equivalent (used by
 `.github/workflows/publish.yml`'s release-gate test run).
-
-`uv sync --extra dev --extra mlx` (Apple Silicon only) additionally installs
-the optional MLX backend, needed for `tests/test_mlx_parity.py`.

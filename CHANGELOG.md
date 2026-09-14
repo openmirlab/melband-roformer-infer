@@ -7,96 +7,23 @@
   Kim FT variants, and InstVoc Duality V1/V2. Existing MelBand architecture
   code handles these configuration variations; weights remain runtime
   downloads with `not-reviewed` license metadata pending upstream clarification.
-
-All notable changes to this project are documented in this file.
-
-## Unreleased
-
-### MLX backend (Apple Silicon)
-
-Twin change with bs-roformer-infer's identical MLX backend addition.
-
-- Added a `backend` argument alongside `device`, on `MelBandRoformerSession`,
-  `MelBandRoformerSeparator`, `separate_folder()`, and the CLI (`--backend`). It
-  accepts `torch` (default), `mlx`, and `auto`. `device` keeps its exact existing
-  Torch meaning; the two are independent axes. Requesting an unavailable backend
-  raises `BackendUnavailable` immediately -- before any checkpoint is resolved or
-  downloaded -- and is never silently swapped for a different one; `auto` is the
-  single place a fallback happens, because there it is what the caller asked for.
-  `cache_info()` now reports the resolved `backend` and `device`.
-- Internal: chunked inference moved behind a `SeparationBackend` seam
-  (`mel_band_roformer.backends`), ported from bs-roformer-infer's identical seam.
-  `run_folder()` keeps its signature and behaviour; the backend-agnostic half is
-  now `separate_folder_with()`. `demix_track()`'s chunk/step/fade/border numbers
-  now come from the shared `ChunkingPlan` instead of being computed a second time.
-- Added an MLX backend behind the optional `[mlx]` extra (`mlx`, `mlx-spectro`),
-  with the MLX MelBand-Roformer model vendored from `mlx-audio-separator` (MIT,
-  ssmall256, commit `0ddc8cf5507906b52ac45a9cd9e6d26e881a93f8`) rather than taken
-  as a dependency. It consumes this package's own sha256-verified checkpoint and
-  config -- no second catalog, no separate converted-weight cache. Weight
-  conversion raises rather than loading partially: upstream's `strict=False`
-  silently drops unmatched keys, which would leave layers at random
-  initialisation and produce confident garbage.
-- Worked around the same MLX 0.31.2 Metal `rfft` correctness bug bs-roformer-infer
-  found and fixed on the sibling BS-Roformer architecture: the kernel returns
-  roughly `4.5e-07` instead of exactly `0` for an all-zero frame, which this
-  model's normalization then amplifies into a full-scale random feature vector
-  that corrupts an entire chunk via time-axis attention. Since every track's
-  final chunk is padded (and music has rests), this affected ordinary use.
-  Measured on the real default checkpoint, end to end through the public session
-  API: a silent-tailed track's maximum absolute error against Torch went from
-  `4.5e-02` with the workaround disabled to `1.8e-07` with it enabled -- roughly
-  the same noise floor as a track with no silence at all (clean signal: `8.4e-08`;
-  near-silent tail: `4.9e-09`). Guarded by `tests/test_mlx_parity.py`, whose
-  silent-tail cases fail loudly if the workaround is removed.
-- Two porting bugs the auditing weight loader caught and this port fixes, neither
-  present in the shipped Torch model:
-  - Upstream's vendored MLX code applies a trunk-level `final_norm` after the
-    transformer stack, in addition to each Transformer's own trailing norm. This
-    package's own Torch `MelBandRoformer` has no such layer -- each Transformer's
-    own norm is the only normalization the trunk ever applies, so a checkpoint
-    never trains a `final_norm` weight. Omitted rather than left at random init.
-  - This package's own Torch `MLP()` (used by the mask estimator) builds `depth`
-    hidden layers for a given `depth` value; bs-roformer-infer's Torch `MLP()` --
-    and the vendored MLX `MLP()` copied from it -- builds `depth - 1`. Copying
-    that helper verbatim would have built a shallower MLP than any checkpoint was
-    trained with. The two sibling packages' `MLP()` depth semantics genuinely
-    differ; this is not a bug in either package on its own, only in copying one's
-    helper into the other without re-deriving it against that package's own Torch
-    model. Fixed to match this package's own `MLP()`.
-  - This package's registry (`config/checkpoints.toml`) declares no
-    mask-estimator variations, so unlike bs-roformer-infer's four-head MLX
-    coverage, this backend only needs the stock head today; the refusal hook for
-    an unsupported variation is still wired (`tests/test_backends.py`) so a future
-    variant checkpoint fails loudly instead of mis-running.
-- Fixed a latent double-release bug found while wiring the backend seam:
-  `MelBandRoformerSession.release()` previously called `.cpu()` on its own model
-  reference *and* (once a backend existed) the backend's `.release()` did the
-  same on the same underlying object. Now `release()` defers entirely to the
-  backend when one exists.
-- Fixed a latent architecture-divergence bug: the MLX backend's
-  `mask_estimator_depth` fallback (`2`, inherited from vendored upstream)
-  disagreed with the Torch constructor's owning default (`1`), so a config
-  omitting the key silently built a different architecture per backend from
-  the same checkpoint. The auditing weight loader failed loudly on the
-  mismatch, but loudly-wrong is still wrong. Masked in practice because every
-  registry config sets the key explicitly. Guarded by a test asserting the MLX
-  fallback equals the Torch constructor's own signature default, so the two
-  cannot drift apart again.
+- Removed the experimental MLX backend and Apple Silicon (MPS) device support
+  added 2026-07-31, before any release ever shipped it: no `backend=` argument,
+  no `[mlx]` extra, no `mel_band_roformer.mlx`/`backends` package. `device="mps"`
+  now raises `ValueError` from the single device resolver, same as any other
+  unsupported device string. This package supports CPU and CUDA only.
 - `checkpoints.py` now carries a real header (the dual-registry relationship --
   a strict 21-model TOML layered on the legacy 99-entry JSON, failure modes,
   a verified `Reads:` line) instead of a one-line docstring an audit had to
-  read the whole body to substitute for. `ChunkingPlan` is now exported through
-  the `backends` barrel instead of forcing `utils.py` to reach past it into
-  `.backends.base`.
+  read the whole body to substitute for.
 - Fixed the two long-standing `test_device_resolution.py` failures: both
   asserted that an explicitly requested `"cuda:0"` survives device resolution
   unchanged, but neither declared CUDA as available, so they passed only on a
-  CUDA host and failed everywhere else, including the Apple Silicon hosts this
-  branch exists to support. No implementation change -- the tests now
-  monkeypatch availability/device count the way the sibling
-  `cuda:0`-index test already did. Suite now 83 passed, 1 skipped, 200
-  deselected, 0 failed.
+  CUDA host and failed everywhere else. No implementation change -- the tests
+  now monkeypatch availability/device count the way the sibling `cuda:0`-index
+  test already did.
+
+All notable changes to this project are documented in this file.
 
 ## [0.1.6] - 2026-08-01
 

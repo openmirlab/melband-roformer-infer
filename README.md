@@ -99,78 +99,24 @@ pip install melband-roformer-infer
 uv pip install melband-roformer-infer
 ```
 
-## Backends and devices
-
-Two independent choices:
-
-| Argument | Values | Meaning |
-|---|---|---|
-| `backend` | `torch` (default), `mlx`, `auto` | which framework computes |
-| `device` | `None`, `auto`, `cpu`, `cuda`, `cuda:N`, `mps` | where Torch computes |
+## Devices
 
 ```python
 from mel_band_roformer import MelBandRoformerSession
 
-with MelBandRoformerSession(device="mps") as session:  # Apple GPU, Torch
+with MelBandRoformerSession(device="cuda:0") as session:
     session.infer("songs/", store_dir="stems/")
 ```
 
 ```bash
-melband-roformer-infer --input_folder songs --device mps
-melband-roformer-infer --input_folder songs --backend auto
+melband-roformer-infer --input_folder songs --device cuda:0
 ```
 
-`backend` defaults to `torch`, so nothing changes unless you ask. `auto` picks an
-accelerated backend only when one is genuinely installed and falls back to Torch
-otherwise. Requesting a backend that cannot run here raises immediately -- before
-any checkpoint is downloaded -- rather than quietly using a different one.
-`backend="mlx"` owns its own Apple Silicon execution and accepts only `device`
-of `auto`/`mps` (or none), refusing anything else rather than ignoring it.
-
-### The MLX backend
-
-Native Apple Silicon execution through [MLX](https://github.com/ml-explore/mlx).
-Install it with the extra, which is never part of the core install:
-
-```bash
-pip install "melband-roformer-infer[mlx]"
-```
-
-```python
-MelBandRoformerSession(backend="mlx").load()
-```
-
-Verified against the Torch path on the default checkpoint (Kim Vocals), end to
-end through the public session API on real WAV files: **8.4e-08** maximum
-absolute error on clean signal, **1.8e-07** on a track with a genuinely silent
-tail, and **4.9e-09** on a near-silent tail. The silent-tail case is the one
-that matters -- MLX's rfft kernel is not exactly zero on an all-zero frame,
-which without a workaround corrupts an entire chunk (see `CLAUDE.md` for the
-mechanism); measured with the workaround disabled, the same silent-tail case
-degrades to `4.5e-02`, roughly 250,000x worse. It reads the same
-sha256-verified checkpoint and config as the Torch path -- there is no second
-catalog and no separate converted-weight cache.
-
-This package's 21-model `config/checkpoints.toml` registry declares no
-mask-estimator variations (unlike this package's fork sibling
-`bs-roformer-infer`, whose registry has four), so every registry checkpoint
-runs under MLX today; a checkpoint requiring a head this backend does not
-build would refuse cleanly by name rather than construct silently as the wrong
-architecture.
-
-It refuses, rather than gets wrong, a config whose `chunk_size` is not a
-multiple of its STFT hop -- an alignment the chunked path silently assumes.
-
-MPS and MLX both need an **arm64 Python interpreter**. Under Rosetta/x86_64
-they report as unavailable rather than failing loudly -- an x86_64 interpreter
-makes `torch.backends.mps.is_available()` return `False`, and MLX ships no
-macOS x86_64 wheel at all, so it cannot even be installed there. Either way,
-an accelerated path just looks absent rather than misconfigured. This is easy
-to hit without noticing: an x86_64 `uv` resolves
-x86_64 interpreters, so `uv sync` can silently produce an environment where
-the accelerated paths structurally cannot exist. Check with
-`python -c "import platform; print(platform.machine())"` -- it must print
-`arm64`.
+`device` accepts `None`/`"auto"` (cuda-else-cpu, the default), `cpu`, `cuda`,
+and `cuda:N`. Requesting an explicit accelerator that is unavailable raises
+`RuntimeError` rather than silently falling back to CPU; any other device
+string (including `mps`) raises `ValueError` -- this package supports CPU and
+CUDA only, with no Apple Silicon (MPS) or MLX backend.
 
 ## Quick Start
 
@@ -363,14 +309,9 @@ pip install -e ".[dev]"
 ```
 
 ```bash
-uv run pytest -q       # unit tests (network- and realweights-marked tests deselected by default)
+uv run pytest -q       # unit tests (network-marked tests deselected by default)
 uv run ruff check .    # lint
 ```
-
-`realweights`-marked tests (`tests/test_mlx_parity.py`) need the `[mlx]` extra
-(`uv sync --extra dev --extra mlx`), an Apple Silicon Mac, and the default
-checkpoint already cached; run them explicitly with
-`pytest -m realweights tests/test_mlx_parity.py -v`.
 
 ---
 
@@ -382,9 +323,6 @@ This project includes code and configurations adapted from:
 - **BS-RoFormer** (MIT) - Phil Wang
 - **python-audio-separator** (MIT) - Andrew Beveridge
 - **Mel-Band-Roformer-Vocal-Model** - Kimberley Jensen
-- **mlx-audio-separator** (MIT) - ssmall256, source of the vendored MLX
-  MelBand-Roformer backend under `src/mel_band_roformer/mlx/` (see that
-  directory's file headers for revision and full license text)
 
 ---
 
@@ -409,15 +347,13 @@ with MelBandRoformerSession() as session:
 the resident model while allowing a later `load()` to rebuild it. `close()` is
 terminal and idempotent (and is called by the context manager). `cache_info()` is
 read-only: it resolves the same default or custom checkpoint path that `load()`
-would use without creating directories or downloading, and now also reports the
-resolved `backend` and `device`. Devices accept legacy automatic selection plus
-explicit `cpu`, `cuda`, `cuda:N`, and `mps`; unavailable explicit accelerators
-raise instead of silently falling back. `backend` (`torch` default, `mlx`,
-`auto`) selects the compute framework and is resolved before any checkpoint is
-downloaded or verified, so an unavailable backend fails fast -- see
-[Backends and devices](#backends-and-devices) above. The packaged
-`config/checkpoints.toml` is the runtime source for its declared default model's
-URLs and SHA-256 metadata; legacy registry records remain a fallback for other
-community model variants. Existing CLI and downloader entry points remain lazy.
-The returned manifest is JSON-serializable and records each actual file write with
-`input_path`, `track_id`, `output_id`, and `output_path`.
+would use without creating directories or downloading, and also reports the
+resolved `device`. Devices accept legacy automatic selection plus explicit
+`cpu`, `cuda`, and `cuda:N`; unavailable explicit accelerators raise instead of
+silently falling back, and any other device string (including `mps`) raises --
+see [Devices](#devices) above. The packaged `config/checkpoints.toml` is the
+runtime source for its declared default model's URLs and SHA-256 metadata;
+legacy registry records remain a fallback for other community model variants.
+Existing CLI and downloader entry points remain lazy. The returned manifest is
+JSON-serializable and records each actual file write with `input_path`,
+`track_id`, `output_id`, and `output_path`.
