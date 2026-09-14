@@ -60,16 +60,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Optional MLX backend (Apple Silicon). Kept out of the core install so a plain
-# `pip install melband-roformer-infer` stays framework-light and importable
-# everywhere; `import mel_band_roformer` never imports mlx. Floors only, no
-# ceilings: mlx-audio-io was deliberately NOT taken as a dependency because it
-# pins mlx to an exact version and ships a compiled backend, and the model path
-# never imports it. Twin change with bs-roformer-infer's identical extra.
-mlx = [
-    "mlx>=0.31",
-    "mlx-spectro>=0.7",
-]
 dev = [
     "pytest>=7.0",
     "ruff>=0.5",
@@ -110,6 +100,5 @@ dev-dependencies = [
 [tool.pytest.ini_options]
 markers = [
     "network: hits real network endpoints (deselected by default, run with -m network)",
-    "realweights: needs a real checkpoint already on disk and specific hardware (deselected by default, run with -m realweights)",
 ]
-addopts = "-m 'not network and not realweights'"
+addopts = "-m 'not network'"
