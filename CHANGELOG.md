@@ -11,6 +11,8 @@
 - Fixed PR CI setup to key the uv cache from the committed `pyproject.toml`;
   this repository has no `uv.lock`, so the old default cache glob stopped
   `setup-uv` before any tests could run.
+- Restored declared Python 3.10 support for checkpoint metadata parsing by
+  using `tomli` when the standard-library `tomllib` is unavailable.
 - Added direct registry coverage for all 20 checkpoints in the `pcunwa`
   Mel-Band Roformer family: Big Beta 1-7, Small, Instrumental V1 variants,
   Kim FT variants, and InstVoc Duality V1/V2. Existing MelBand architecture
