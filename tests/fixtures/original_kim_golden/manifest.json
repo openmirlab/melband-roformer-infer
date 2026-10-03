@@ -1,0 +1,43 @@
+{
+  "upstream_revision": "93a07dda7867d4acd8f5bd49ae3f33e1fcbfd8cf",
+  "upstream_model_sha256": "25ba7b69d9a60ea5cbae9b477d4f4a15565dba20aa1fbbda0c639a7821d581f7",
+  "upstream_attention_sha256": "50f33aad57e205d812004167626a519b3febad9ca0394e756585284054634359",
+  "checkpoint_sha256": "87201f4d31afb5bc79993230fc49446918425574db48c01c405e44f365c7559e",
+  "config_sha256": "5e380dfa5d5757ac4c2b7f6ef607b93d5058ecff805e7b05ed730a47b90d103c",
+  "torch": "2.9.1+cu128",
+  "cuda_device": "NVIDIA GeForce RTX 4090",
+  "cuda_capability": [
+    8,
+    9
+  ],
+  "seed": 12345,
+  "sample_rate": 44100,
+  "waveform_shape": [
+    1,
+    2,
+    88200
+  ],
+  "output_shape": [
+    1,
+    2,
+    88200
+  ],
+  "public_baseline": {
+    "kind": "existing port session, not upstream inference wrapper",
+    "input_shape": [
+      396900,
+      2
+    ],
+    "output_ids": [
+      "instrumental",
+      "vocals"
+    ],
+    "output_shape": [
+      396900,
+      2
+    ],
+    "sample_rate": 44100,
+    "torch": "2.9.1+cu128",
+    "cuda_device": "NVIDIA GeForce RTX 4090"
+  }
+}

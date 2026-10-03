@@ -15,10 +15,14 @@ its `artifacts` list, or an artifact with a missing/malformed URL or SHA-256.
 `checkpoint_metadata` raises `KeyError` (not `ValueError`) for a model name absent
 from this TOML registry -- a distinct failure mode from a malformed file.
 
-Reads: config/checkpoints.toml (via tomllib)
+Reads: config/checkpoints.toml (via tomllib or tomli on Python 3.10)
 """
 from pathlib import Path
-import tomllib
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python 3.10
+    import tomli as tomllib
 
 
 def checkpoint_config_path() -> Path:

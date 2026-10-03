@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Added reproducible real-weight golden fixtures for the default Kim vocals
+  model. The port's complete FP32 and autocast outputs match the pristine
+  historical BS-RoFormer architecture exactly on the recorded CUDA profile.
+  A separate public-session fixture locks both complete 9-second written stems
+  through overlapping chunks. Tests skip when the official cached weights or
+  matching GPU profile are unavailable; no checkpoint bytes are committed.
+- Fixed PR CI setup to key the uv cache from the committed `pyproject.toml`;
+  this repository has no `uv.lock`, so the old default cache glob stopped
+  `setup-uv` before any tests could run.
+- Restored declared Python 3.10 support for checkpoint metadata parsing by
+  using `tomli` when the standard-library `tomllib` is unavailable.
 - Added direct registry coverage for all 20 checkpoints in the `pcunwa`
   Mel-Band Roformer family: Big Beta 1-7, Small, Instrumental V1 variants,
   Kim FT variants, and InstVoc Duality V1/V2. Existing MelBand architecture
