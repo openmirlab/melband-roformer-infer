@@ -150,6 +150,17 @@ model.load_state_dict(torch.load(ckpt_path, map_location="cpu"))
 
 **MelBand Roformer Kim** (`melband-roformer-kim-vocals`) by Kimberley Jensen is the recommended default model for vocal separation. It provides excellent quality and is the foundation for many fine-tuned variants.
 
+The real-weight regression in `tests/test_original_kim_golden.py` compares the
+complete 2-second model output with a fixture generated from pristine
+`lucidrains/BS-RoFormer@93a07dd`, using the official Kim checkpoint and config.
+It checks both FP32 and CUDA autocast. A separate 9-second fixture checks the
+public session's complete written vocals and instrumental stems across the
+default chunk boundary. That second fixture records this package's existing
+inference pipeline; the upstream repository supplies the architecture, not an
+equivalent session pipeline. Both tests require a locally cached official
+checkpoint and the recorded Torch/CUDA profile; otherwise they skip. The
+checkpoint is downloaded at runtime and is never included in this repository.
+
 ```python
 from mel_band_roformer import DEFAULT_MODEL
 print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"

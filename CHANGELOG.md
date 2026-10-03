@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added reproducible real-weight golden fixtures for the default Kim vocals
+  model. The port's complete FP32 and autocast outputs match the pristine
+  historical BS-RoFormer architecture exactly on the recorded CUDA profile.
+  A separate public-session fixture locks both complete 9-second written stems
+  through overlapping chunks. Tests skip when the official cached weights or
+  matching GPU profile are unavailable; no checkpoint bytes are committed.
 - Added direct registry coverage for all 20 checkpoints in the `pcunwa`
   Mel-Band Roformer family: Big Beta 1-7, Small, Instrumental V1 variants,
   Kim FT variants, and InstVoc Duality V1/V2. Existing MelBand architecture
