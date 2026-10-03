@@ -21,5 +21,23 @@
     1,
     2,
     88200
-  ]
+  ],
+  "public_baseline": {
+    "kind": "existing port session, not upstream inference wrapper",
+    "input_shape": [
+      396900,
+      2
+    ],
+    "output_ids": [
+      "instrumental",
+      "vocals"
+    ],
+    "output_shape": [
+      396900,
+      2
+    ],
+    "sample_rate": 44100,
+    "torch": "2.9.1+cu128",
+    "cuda_device": "NVIDIA GeForce RTX 4090"
+  }
 }
