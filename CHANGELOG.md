@@ -8,6 +8,9 @@
   A separate public-session fixture locks both complete 9-second written stems
   through overlapping chunks. Tests skip when the official cached weights or
   matching GPU profile are unavailable; no checkpoint bytes are committed.
+- Fixed PR CI setup to key the uv cache from the committed `pyproject.toml`;
+  this repository has no `uv.lock`, so the old default cache glob stopped
+  `setup-uv` before any tests could run.
 - Added direct registry coverage for all 20 checkpoints in the `pcunwa`
   Mel-Band Roformer family: Big Beta 1-7, Small, Instrumental V1 variants,
   Kim FT variants, and InstVoc Duality V1/V2. Existing MelBand architecture
