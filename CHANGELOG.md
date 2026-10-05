@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — distribution policy
+
+- Stop publishing new versions to PyPI; GitHub source is the maintained installation channel. GitHub release CI continues to run verification and build checks.
+
 ## Unreleased
 
 - Added reproducible real-weight golden fixtures for the default Kim vocals

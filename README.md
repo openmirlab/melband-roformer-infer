@@ -1,5 +1,8 @@
 # MelBand-RoFormer-Infer
 
+> **Current installation:** `pip install "melband-roformer-infer @ git+https://github.com/openmirlab/melband-roformer-infer.git"`
+> OpenMIRLab no longer publishes new versions to PyPI. Any existing PyPI releases are historical snapshots.
+
 **Production-ready, inference-only toolkit for Mel-Band RoFormer audio source separation**
 
 MelBand-RoFormer-Infer provides a clean, lightweight API for running music source separation inference using Mel-Band RoFormer models with automatic checkpoint management.
@@ -7,7 +10,6 @@ MelBand-RoFormer-Infer provides a clean, lightweight API for running music sourc
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/melband-roformer-infer)](https://pypi.org/project/melband-roformer-infer/)
 
 ---
 
@@ -93,10 +95,10 @@ checkpoint management with sha256 verification; a standalone download CLI.
 
 ```bash
 # Using pip
-pip install melband-roformer-infer
+pip install "melband-roformer-infer @ git+https://github.com/openmirlab/melband-roformer-infer.git"
 
 # Using UV (recommended)
-uv pip install melband-roformer-infer
+uv pip install "melband-roformer-infer @ git+https://github.com/openmirlab/melband-roformer-infer.git"
 ```
 
 ## Devices
