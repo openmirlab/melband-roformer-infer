@@ -1,8 +1,5 @@
 # MelBand-RoFormer-Infer
 
-> **Current installation:** `pip install "melband-roformer-infer @ git+https://github.com/openmirlab/melband-roformer-infer.git"`
-> OpenMIRLab no longer publishes new versions to PyPI. Any existing PyPI releases are historical snapshots.
-
 **Production-ready, inference-only toolkit for Mel-Band RoFormer audio source separation**
 
 MelBand-RoFormer-Infer provides a clean, lightweight API for running music source separation inference using Mel-Band RoFormer models with automatic checkpoint management.
@@ -131,6 +128,32 @@ melband-roformer-infer --input_folder ./songs --store_dir ./outputs
 Every WAV inside `input_folder` produces `*_vocals.wav` and `*_instrumental.wav` stems. Explicit `--config_path`/`--model_path` arguments still work and skip auto-resolution entirely; `--model <slug>` picks a different registry model to auto-resolve.
 
 ---
+
+## Explicit lifecycle API
+
+For applications that need controlled model lifetime, use `MelBandRoformerSession`:
+
+```python
+from mel_band_roformer import MelBandRoformerSession
+with MelBandRoformerSession() as session:
+    manifest = session.infer("input_folder", store_dir="outputs")
+    print(manifest[0]["output_id"], manifest[0]["output_path"])
+```
+
+`load()` is idempotent, `infer()` requires a ready session, and `release()` frees
+the resident model while allowing a later `load()` to rebuild it. `close()` is
+terminal and idempotent (and is called by the context manager). `cache_info()` is
+read-only: it resolves the same default or custom checkpoint path that `load()`
+would use without creating directories or downloading, and also reports the
+resolved `device`. Devices accept legacy automatic selection plus explicit
+`cpu`, `cuda`, and `cuda:N`; unavailable explicit accelerators raise instead of
+silently falling back, and any other device string (including `mps`) raises --
+see [Devices](#devices) above. The packaged `config/checkpoints.toml` is the
+runtime source for its declared default model's URLs and SHA-256 metadata;
+legacy registry records remain a fallback for other community model variants.
+Existing CLI and downloader entry points remain lazy. The returned manifest is
+JSON-serializable and records each actual file write with `input_path`,
+`track_id`, `output_id`, and `output_path`.
 
 ## Python API
 
@@ -345,28 +368,3 @@ For issues and questions:
 - **GitHub Issues**: [github.com/openmirlab/melband-roformer-infer/issues](https://github.com/openmirlab/melband-roformer-infer/issues)
 
 ---
-## Explicit lifecycle API
-
-For applications that need controlled model lifetime, use `MelBandRoformerSession`:
-
-```python
-from mel_band_roformer import MelBandRoformerSession
-with MelBandRoformerSession() as session:
-    manifest = session.infer("input_folder", store_dir="outputs")
-    print(manifest[0]["output_id"], manifest[0]["output_path"])
-```
-
-`load()` is idempotent, `infer()` requires a ready session, and `release()` frees
-the resident model while allowing a later `load()` to rebuild it. `close()` is
-terminal and idempotent (and is called by the context manager). `cache_info()` is
-read-only: it resolves the same default or custom checkpoint path that `load()`
-would use without creating directories or downloading, and also reports the
-resolved `device`. Devices accept legacy automatic selection plus explicit
-`cpu`, `cuda`, and `cuda:N`; unavailable explicit accelerators raise instead of
-silently falling back, and any other device string (including `mps`) raises --
-see [Devices](#devices) above. The packaged `config/checkpoints.toml` is the
-runtime source for its declared default model's URLs and SHA-256 metadata;
-legacy registry records remain a fallback for other community model variants.
-Existing CLI and downloader entry points remain lazy. The returned manifest is
-JSON-serializable and records each actual file write with `input_path`,
-`track_id`, `output_id`, and `output_path`.
