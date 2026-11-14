@@ -1,8 +1,8 @@
 """Package-owned checkpoint metadata and validation for the strict TOML registry.
 
 `config/checkpoints.toml` is a smaller, stricter, sha256-verified sibling registry
-(21 models, schema.version=1) layered on top of the legacy `data/melband_models.json`
-(backing `model_registry.py`'s 99-entry `MODEL_REGISTRY`, this package's original and
+(37 models/74 artifacts, schema.version=1) layered on top of the legacy `data/melband_models.json`
+(backing `model_registry.py`'s 115-entry `MODEL_REGISTRY`, this package's original and
 still-primary registry): every model here is cross-referenced by slug against that
 JSON registry and additionally carries per-artifact sha256 digests and provenance,
 which the JSON registry does not. Callers (`download.py`, `clean_api.py`) look a

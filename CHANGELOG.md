@@ -6,6 +6,13 @@
 
 ## Unreleased
 
+- Replace the stale Kim-vocals config fallback URL with an immutable copy
+  already tracked in this repo. Its bytes match the packaged default config;
+  default inference and checkpoint weights are unchanged. Add offline digest
+  and opt-in live URL checks for the fallback.
+- Correct current catalog counts in README and maintainer docs: 37 strict
+  manifest models/74 assets and 115 legacy registry entries. The historical
+  57/99 availability count remains a dated scout result, not a current claim.
 - Added reproducible real-weight golden fixtures for the default Kim vocals
   model. The port's complete FP32 and autocast outputs match the pristine
   historical BS-RoFormer architecture exactly on the recorded CUDA profile.

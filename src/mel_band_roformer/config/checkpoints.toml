@@ -6,7 +6,7 @@ model = "melband-roformer-kim-vocals"
 license = "CC-BY-NC-SA-4.0"
 provenance = "OpenMIRLab release metadata; upstream MelBand Roformer checkpoint mirror"
 source_revision = "2026-07-12"
-updated_at = "2026-07-12"
+updated_at = "2026-11-14"
 
 [[models.melband-roformer-kim-vocals.artifacts]]
 kind = "checkpoint"
@@ -18,7 +18,7 @@ size = 913106900
 [[models.melband-roformer-kim-vocals.artifacts]]
 kind = "config"
 name = "config_vocals_mel_band_roformer.yaml"
-url = "https://raw.githubusercontent.com/TRvlvr/application_data/main/mdx_model_data/mdx_c_configs/config_vocals_mel_band_roformer.yaml"
+url = "https://raw.githubusercontent.com/openmirlab/melband-roformer-infer/8fd9c568bd26670e485bac8d396029d6f3e66e02/src/mel_band_roformer/configs/config_vocals_mel_band_roformer.yaml"
 sha256 = "5e380dfa5d5757ac4c2b7f6ef607b93d5058ecff805e7b05ed730a47b90d103c"
 size = 728
 

@@ -24,8 +24,8 @@ through [python-audio-separator](https://github.com/nomadkaraoke/python-audio-se
 individual community members' personal Hugging Face accounts -- hosts that
 can and do vanish or get renamed without warning (see the jarredou account
 deletion and the broader 2026-07 registry audit in `CHANGELOG.md`: 57 of the
-99 registry entries are currently known fully usable; the older legacy audit
-also records dead or partially dead third-party entries).
+then-99 registry entries were verified fully usable at that time. This is a
+historical count, not an availability claim for all 115 current entries).
 
 MelBand-RoFormer-Infer reprovides the architecture as a clean,
 pip-installable, inference-only package: no training code, no GUI
@@ -68,7 +68,7 @@ Also available as a preprint: [arXiv:2309.02612](https://arxiv.org/abs/2309.0261
 
 - **Inference Only**: Lightweight package focused on production inference
 - **Auto-Download**: the default model is fetched on first use and sha256-verified against recorded checksums
-- **Model Registry**: 99 catalogued models -- vocals, instrumentals, karaoke, denoise, dereverb, and more (see the availability note below)
+- **Model Registry**: 115 catalogued models -- vocals, instrumentals, karaoke, denoise, dereverb, and more (see the availability note below)
 - **CLI Tools**: `melband-roformer-infer` and `melband-roformer-download` commands
 - **Python API**: Clean programmatic interface
 
@@ -223,21 +223,23 @@ print(DEFAULT_MODEL)  # "melband-roformer-kim-vocals"
 | `pcunwa-melband-roformer-small-v1` | vocals | Direct pcunwa Small V1 checkpoint |
 | `pcunwa-melband-roformer-inst-v1` ... `pcunwa-melband-roformer-inst-v1-plus-test` | instrumental | Direct pcunwa Instrumental V1 variants |
 | `pcunwa-kimmel-ft` ... `pcunwa-kimmel-ft3-prev` | vocals | Direct pcunwa Kim fine-tuned variants |
-| ... | ... | See `--list-models` for 99 models |
+| ... | ... | See `--list-models` for 115 models |
 
 **Categories**: vocals, instrumental, instvoc, karaoke, guitar, denoise, dereverb, crowd, general, aspiration
 
-The package-owned TOML metadata contains all 20 direct pcunwa Mel-Band
-checkpoints, including InstVoc Duality V1/V2. The weight files remain runtime
+The package-owned TOML metadata contains 37 directly declared models (74
+artifacts), including all 20 direct pcunwa Mel-Band checkpoints and InstVoc
+Duality V1/V2. The larger 115-model legacy registry includes entries that have
+not all been verified usable. The weight files remain runtime
 downloads; the pcunwa repositories currently do not declare an explicit weight
 license in their cards or repository files.
 
 > **Note on download availability** (re-audited 2026-07-23): this registry is
 > bulk-imported from several third-party contributors' Hugging Face repos, some
 > of which get renamed or taken down without notice (see `CHANGELOG.md` for the
-> 2026-07 audit and the jarredou account deletion). As of the latest audit,
-> **57 of the 99 registry models are known fully usable** (checkpoint and config both
-> live -- all of these carry recorded sha256 checksums). The older legacy audit
+> 2026-07 audit and the jarredou account deletion). That July survey verified
+> **57 of the then-99 registry models** as fully usable (checkpoint and config both
+> live at that time, with recorded sha256 checksums). The older legacy audit
 > also records dead or partially dead third-party entries; those remain in the
 > registry for compatibility but are not declared as known-good checkpoint
 > metadata.
@@ -302,7 +304,10 @@ print a warning and fall back to a basic size check.
 
 ### Manual download (offline / air-gapped)
 
-The recommended Kim model needs one file (its config ships inside the package):
+The recommended Kim model needs one downloaded file (its config ships inside
+the package). The package-owned manifest also records an immutable URL for
+that same config as a fallback; the former third-party config URL stopped
+responding, while the packaged copy remains the default source:
 
 | File | URL | sha256 |
 |------|-----|--------|

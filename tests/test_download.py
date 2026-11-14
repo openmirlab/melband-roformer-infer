@@ -9,10 +9,13 @@ DEFAULT_MODEL's packaged-config invariant: melband-roformer-kim-vocals ships
 config_vocals_mel_band_roformer.yaml pre-packaged under configs/, so its config
 must never need a network fetch.
 
-Reads: mel_band_roformer.download, mel_band_roformer.model_registry.MODEL_REGISTRY
+Reads: hashlib, urllib.request, mel_band_roformer.checkpoints,
+mel_band_roformer.download, mel_band_roformer.model_registry.MODEL_REGISTRY
 """
 
+import hashlib
 import sys
+import urllib.request
 from pathlib import Path
 
 import pytest
@@ -48,6 +51,25 @@ class TestPackagedConfigInvariant:
             f"or _copy_packaged_config will never find it and the config always "
             f"gets network-fetched instead."
         )
+
+    def test_strict_manifest_config_matches_packaged_bytes(self):
+        model = MODEL_REGISTRY.get(DEFAULT_MODEL)
+        packaged = download_module.PACKAGE_ROOT / "configs" / model.config
+        manifest = load_checkpoints()["models"][DEFAULT_MODEL]
+        config_asset = next(asset for asset in manifest["artifacts"] if asset["kind"] == "config")
+        assert hashlib.sha256(packaged.read_bytes()).hexdigest() == config_asset["sha256"]
+        assert "/8fd9c568bd26670e485bac8d396029d6f3e66e02/" in config_asset["url"]
+
+    @pytest.mark.network
+    def test_pinned_manifest_config_url_has_exact_packaged_bytes(self):
+        model = MODEL_REGISTRY.get(DEFAULT_MODEL)
+        manifest = load_checkpoints()["models"][DEFAULT_MODEL]
+        config_asset = next(asset for asset in manifest["artifacts"] if asset["kind"] == "config")
+        with urllib.request.urlopen(config_asset["url"], timeout=20) as response:
+            downloaded = response.read()
+        packaged = download_module.PACKAGE_ROOT / "configs" / model.config
+        assert downloaded == packaged.read_bytes()
+        assert hashlib.sha256(downloaded).hexdigest() == config_asset["sha256"]
 
     def test_config_url_is_none_when_packaged_copy_exists(self):
         """_config_url returns None (meaning: use the local file) since the names line up."""

@@ -64,8 +64,8 @@ Bundle").
   support (an experimental MLX backend + `backend=` argument existed
   2026-07-31 through this removal, decided 2026-09-14; never released).
 - `src/mel_band_roformer/checkpoints.py` -- package-owned checkpoint metadata
-  and validation for the strict TOML registry (`config/checkpoints.toml`, 21
-  models, schema.version=1), layered on top of the legacy 99-entry
+  and validation for the strict TOML registry (`config/checkpoints.toml`, 37
+  models/74 artifacts, schema.version=1), layered on top of the legacy 115-entry
   `data/melband_models.json` that `model_registry.py` still primarily backs.
   `load_checkpoints` raises `ValueError` for a malformed schema/artifact;
   `checkpoint_metadata` raises `KeyError` for a model absent from this TOML
@@ -99,22 +99,27 @@ Bundle").
 
 ## Weights hosting (org constitution article 4)
 
-All 115 registry models download from third-party hosts at runtime; none are
-committed to this repo. This registry was bulk-imported from
+The 115 registry entries reference third-party checkpoint hosts at runtime;
+no weights are committed here, and the default Kim config is packaged. This
+registry was bulk-imported from
 python-audio-separator's `models.json`, which shares checkpoint/config
 filenames but not necessarily a live download URL for each entry -- a
 2026-07-12 audit found most of the ~68 bulk-imported (non-overridden)
 entries had never been wired to a real URL. After the 2026-07-23 scout:
-**57 of 99 models are known fully usable** (checkpoint and config both live,
-both with recorded sha256). The older 2026-07-12 audit also records dead or
+**57 of the then-99 models were verified fully usable** (checkpoint and config
+both live at that time, with recorded sha256). This historical count does not
+certify all 115 current entries. The older 2026-07-12 audit also records dead or
 partially dead legacy entries; those remain in the registry for compatibility
 but are not declared in package-owned known-good checkpoint metadata. Two
 HF-hosted overrides (`inst_gaboxFv8.ckpt`, `inst_gaboxFv8B.ckpt`) were newly
 confirmed dead in the earlier 2026-07-12 pass.
 
 The recommended default (`melband-roformer-kim-vocals`, Kimberley Jensen's
-original model) is unaffected -- its checkpoint and config are both live and
-sha256-verified. Provenance for the karaoke-by-gabox override moved once
+original model) remains usable: the checkpoint URL is live, and its config
+normally comes from the package's SHA-verified local copy. The previous
+third-party config URL returned 404 on 2026-11-14; the strict manifest now
+points to an immutable copy in this repo at `8fd9c568`, with identical SHA-256.
+Provenance for the karaoke-by-gabox override moved once
 already, discovered by outage rather than announcement: the original
 `jarredou` Hugging Face account was deleted (confirmed gone during the
 2026-07 audit) and the override was repointed to a Politrees/UVR_resources
